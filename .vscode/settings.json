@@ -1,0 +1,4 @@
+{
+    "ceedlingExplorer.debugConfiguration": "ceedling_gdb",
+    "C_Cpp.errorSquiggles": "disabled"
+}

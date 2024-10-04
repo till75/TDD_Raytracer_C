@@ -3,67 +3,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void vecmath_PrintTuple(Tuple* t)
-{
-   printf("x:%6.2f, y:%6.2f, z:%6.2f, w:%6.2f", t->x, t->y, t->z, t->w); 
-}
-
 void vecmath_PrintMatrix4d(Matrix4d* m)
 {
     for(int r=0; r<4; r++)
         printf( "| %8.5f | %8.5f | %8.5f | %8.5f |\n", (*m)[r][0], (*m)[r][1], (*m)[r][2], (*m)[r][3]); 
 }
 
-void vecmath_CreateTuple(Tuple* pT, float x, float y, float z, float a)
+bool vecmath_IsPointTuple4d(Tuple4d* t)
 {
-    pT->x = x;
-    pT->y = y;
-    pT->z = z;
-    pT->w = a;
+    return(fabsf((*t)[3] - 1.0f) < EPSILON);
 }
 
-
-void vecmath_CreatePoint(Tuple* pT, float x, float y, float z)
+bool vecmath_IsVectorTuple4d(Tuple4d* t)
 {
-    pT->x = x;
-    pT->y = y;
-    pT->z = z;
-    pT->w = 1.0;
+    return(fabsf((*t)[3]) < EPSILON);
 }
 
-void vecmath_CreateVector(Tuple* pT, float x, float y, float z)
-{
-    pT->x = x;
-    pT->y = y;
-    pT->z = z;
-    pT->w = 0.0;
-}
-
-float vecmath_GetItem(Matrix4d* matrix, int x, int y)
-{
-    return *(matrix)[x][y];
-}
-
-bool vecmath_IsPoint(Tuple* t)
-{
-    return(fabsf(t->w - 1.0f) < EPSILON);
-}
-
-bool vecmath_IsVector(Tuple* t)
-{
-    return(fabsf(t->w) < EPSILON);
-}
-
-bool vecmath_AreEqualTuples(Tuple* t1, Tuple* t2)
+bool vecmath_AreEqualTuples4d(Tuple4d* t1, Tuple4d* t2)
 {
     return (
-        (fabsf(t1->x - t2->x) < EPSILON)
+        (fabsf((*t1)[0] - (*t2)[0]) < EPSILON)
         &&
-        (fabsf(t1->y - t2->y) < EPSILON)
+        (fabsf((*t1)[1] - (*t2)[1]) < EPSILON)
         &&
-        (fabsf(t1->z - t2->z) < EPSILON)
+        (fabsf((*t1)[2] - (*t2)[2]) < EPSILON)
         &&
-        (fabsf(t1->w - t2->w) < EPSILON)
+        (fabsf((*t1)[3] - (*t2)[3]) < EPSILON)
     );
 }
 
@@ -140,68 +105,68 @@ bool vecmath_AreEqualMatrices4d(Matrix4d* m1, Matrix4d* m2)
     );
 }
 
-void vecmath_AddTuples(Tuple* t1, Tuple* t2)
+void vecmath_AddTuples4d(Tuple4d* t1, Tuple4d* t2)
 {
-    t1->x += t2->x;
-    t1->y += t2->y;
-    t1->z += t2->z;
-    t1->w += t2->w;
+    (*t1)[0] += (*t2)[0];
+    (*t1)[1] += (*t2)[1];
+    (*t1)[2] += (*t2)[2];
+    (*t1)[3] += (*t2)[3];
 }
 
-void vecmath_SubtractTuples(Tuple* t1, Tuple* t2)
+void vecmath_SubtractTuples4d(Tuple4d* t1, Tuple4d* t2)
 {
-    t1->x -= t2->x;
-    t1->y -= t2->y;
-    t1->z -= t2->z;
-    t1->w -= t2->w;
+    (*t1)[0] -= (*t2)[0];
+    (*t1)[1] -= (*t2)[1];
+    (*t1)[2] -= (*t2)[2];
+    (*t1)[3] -= (*t2)[3];
 }
 
-void vecmath_NegateTuple(Tuple* t)
+void vecmath_NegateTuple4d(Tuple4d* t1)
 {
-    t->x *= -1.0;
-    t->y *= -1.0;
-    t->z *= -1.0;
-    t->w *= -1.0;
+    (*t1)[0] *= -1.0;
+    (*t1)[1] *= -1.0;
+    (*t1)[2] *= -1.0;
+    (*t1)[3] *= -1.0;
 }
 
-void vecmath_ScaleTuple(Tuple* t, float s)
+void vecmath_ScaleTuple4d(Tuple4d* t1, float s)
 {
-    t->x *= s;
-    t->y *= s;
-    t->z *= s;
-    t->w *= s;
+    (*t1)[0] *= s;
+    (*t1)[1] *= s;
+    (*t1)[2] *= s;
+    (*t1)[3] *= s;
 }
 
-void vecmath_DivideTuple(Tuple* t, float s)
+void vecmath_DivideTuple4d(Tuple4d* t1, float s)
 {
-    t->x /= s;
-    t->y /= s;
-    t->z /= s;
-    t->w /= s;
+    (*t1)[0] /= s;
+    (*t1)[1] /= s;
+    (*t1)[2] /= s;
+    (*t1)[3] /= s;
 }
 
-float vecmath_Magnitude(Tuple* t)
+float vecmath_MagnitudeTuple4d(Tuple4d* t)
 {
-    return sqrt(t->x*t->x + t->y*t->y + t->z*t->z + t->w*t->w);
+    return sqrt((*t)[0] * (*t)[0] + (*t)[1] * (*t)[1] + (*t)[2] * (*t)[2] + (*t)[3] * (*t)[3]);
 }
 
-void vecmath_Normalize(Tuple* t)
+void vecmath_NormalizeTuple4d(Tuple4d* t)
 {
-    float length = vecmath_Magnitude(t);
-    vecmath_DivideTuple(t, length);
+    float length = vecmath_MagnitudeTuple4d(t);
+    vecmath_DivideTuple4d(t, length);
 }
 
-float vecmath_DotProduct(Tuple* t1, Tuple* t2)
+float vecmath_DotProductTuple4d(Tuple4d* t1, Tuple4d* t2)
 {
-    return t1->x*t2->x + t1->y*t2->y + t1->z*t2->z + t1->w*t2->w;
+    return (*t1)[0]*(*t2)[0] + (*t1)[1]*(*t2)[1] + (*t1)[2]*(*t2)[2] + (*t1)[3]*(*t2)[3];
 }
 
-void vecmath_CrossProduct(Tuple* result, Tuple* t1, Tuple* t2)
+void vecmath_CrossProductTuple4d(Tuple4d* result, Tuple4d* t1, Tuple4d* t2)
 {
-    result->x = t1->y * t2->z - t1->z * t2->y;
-    result->y = t1->z * t2->x - t1->x * t2->z;
-    result->z = t1->x * t2->y - t1->y * t2->x;
-    result->w = 0.0;
+    (*result)[0] = (*t1)[1] * (*t2)[2] - (*t1)[2] * (*t2)[1];
+    (*result)[1] = (*t1)[2] * (*t2)[0] - (*t1)[0] * (*t2)[2];
+    (*result)[2] = (*t1)[0] * (*t2)[1] - (*t1)[1] * (*t2)[0];
+    (*result)[3] = 0.0;
 }
 
 void vecmath_MultiplyMatrix4d(Matrix4d* res, Matrix4d* m2)
@@ -225,17 +190,16 @@ void vecmath_MultiplyMatrix4d(Matrix4d* res, Matrix4d* m2)
     }
 }
 
-void vecmath_MultiplyTupleByMatrix(Tuple* ret, Matrix4d* m)
+void vecmath_MultiplyTuple4dByMatrix4d(Tuple4d* ret, Matrix4d* m)
 {
-    Tuple t;
-    vecmath_CreateTuple(&t, ret->x, ret->y, ret->z, ret->w);
-    ret->x = (*m)[0][0] * t.x + (*m)[0][1] * t.y + (*m)[0][2] * t.z + (*m)[0][3] * t.w;
-    ret->y = (*m)[1][0] * t.x + (*m)[1][1] * t.y + (*m)[1][2] * t.z + (*m)[1][3] * t.w;
-    ret->z = (*m)[2][0] * t.x + (*m)[2][1] * t.y + (*m)[2][2] * t.z + (*m)[2][3] * t.w;
-    ret->w = (*m)[3][0] * t.x + (*m)[3][1] * t.y + (*m)[3][2] * t.z + (*m)[3][3] * t.w;
+    Tuple4d t = {(*ret)[0], (*ret)[1], (*ret)[2], (*ret)[3]};
+    (*ret)[0] = (*m)[0][0] * t[0] + (*m)[0][1] * t[1] + (*m)[0][2] * t[2] + (*m)[0][3] * t[3];
+    (*ret)[1] = (*m)[1][0] * t[0] + (*m)[1][1] * t[1] + (*m)[1][2] * t[2] + (*m)[1][3] * t[3];
+    (*ret)[2] = (*m)[2][0] * t[0] + (*m)[2][1] * t[1] + (*m)[2][2] * t[2] + (*m)[2][3] * t[3];
+    (*ret)[3] = (*m)[3][0] * t[0] + (*m)[3][1] * t[1] + (*m)[3][2] * t[2] + (*m)[3][3] * t[3];
 }
 
-void vecmath_TranssposeMatrix(Matrix4d* res) 
+void vecmath_TranssposeMatrix4d(Matrix4d* res) 
 {
     float t;
     t = (*res)[0][1]; (*res)[0][1] = (*res)[1][0]; (*res)[1][0] = t;
@@ -380,7 +344,7 @@ void vecmath_InverseMatrix4d(Matrix4d* m, Matrix4d* res)
             (*res)[r][c] = vecmath_CofactorMatrix4d(m, r, c);
         }
     }
-    vecmath_TranssposeMatrix(res);
+    vecmath_TranssposeMatrix4d(res);
     vecmath_ScaleMatrix4d(res, 1.0/det);
 }
 

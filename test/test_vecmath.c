@@ -12,246 +12,225 @@ void tearDown(void)
 {
 }
 
-void test_vecmath_CreateTuple(void)
-{
-    Tuple t;
-    vecmath_CreateTuple(&t, 4.3, -4.2, 3.1, 1.0);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 4.3, t.x);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, -4.2, t.y);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.1, t.z);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, t.w);
-    TEST_ASSERT_TRUE(vecmath_IsPoint(&t));
-    TEST_ASSERT_FALSE(vecmath_IsVector(&t));
-}
 
-void test_vecmath_CreatePoint(void)
+void test_vecmath_CreateTuple4d(void)
 {
-    Tuple t;
-    vecmath_CreatePoint(&t, 4.3, -4.2, 3.1);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 4.3, t.x);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, -4.2, t.y);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.1, t.z);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, t.w);
-    TEST_ASSERT_TRUE(vecmath_IsPoint(&t));
-    TEST_ASSERT_FALSE(vecmath_IsVector(&t));
+    Tuple4d t = {4.3, -4.2, 3.1, 1.0};
+    
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 4.3, t[0]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, -4.2, t[1]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.1, t[2]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, t[3]);
+    TEST_ASSERT_TRUE(vecmath_IsPointTuple4d(&t));
+    TEST_ASSERT_FALSE(vecmath_IsVectorTuple4d(&t));
 }
 
 void test_vecmath_CreateVector(void)
 {
-    Tuple t;
-    vecmath_CreateVector(&t, 4.3, -4.2, 3.1);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 4.3, t.x);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, -4.2, t.y);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.1, t.z);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.0, t.w);
-    TEST_ASSERT_TRUE(vecmath_IsVector(&t));
-    TEST_ASSERT_FALSE(vecmath_IsPoint(&t));
+    Tuple4d t = {4.3, -4.2, 3.1, 0};
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 4.3, t[0]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, -4.2, t[1]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.1, t[2]);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.0, t[3]);
+    TEST_ASSERT_TRUE(vecmath_IsVectorTuple4d(&t));
+    TEST_ASSERT_FALSE(vecmath_IsPointTuple4d(&t));
 }
 
-void test_vecmath_AreEqualTuples(void)
+void test_vecmath_AreEqualTuples4d(void)
 {
-    Tuple t1, t2;
-    vecmath_CreateTuple(&t1, 4.3, -4.2, 3.1, 1.0);
-    vecmath_CreateTuple(&t2, 4.3, -4.2, 3.1, 1.0);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &t2));
+    Tuple4d t1 = {4.3, -4.2, 3.1, 1.0};
+    Tuple4d t2 = {4.3, -4.2, 3.1, 1.0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &t2));
 }
 
-void test_vecmath_AddTuples(void)
+void test_vecmath_AddTuples4d(void)
 {
-    Tuple t1, t2;
-    Tuple expected;
-    vecmath_CreateTuple(&t1, 3, -2, 5, 1);
-    vecmath_CreateTuple(&t2, -2, 3, 1, 0);
-    vecmath_CreateTuple(&expected, 1, 1, 6, 1);
-    vecmath_AddTuples(&t1, &t2);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_TRUE(vecmath_IsPoint(&t1));
+    Tuple4d t1 = {3, -2, 5, 1};
+    Tuple4d t2 = {-2, 3, 1, 0};
+    Tuple4d expected = {1, 1, 6, 1};
+    vecmath_AddTuples4d(&t1, &t2);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_TRUE(vecmath_IsPointTuple4d(&t1));
 }
 
 void test_vecmath_SubtractingPoints_CreatesVector(void)
 {
-    Tuple t1, t2;
-    Tuple expected;
-    vecmath_CreatePoint(&t1, 3, 2, 1);
-    vecmath_CreatePoint(&t2, 5, 6, 7);
-    vecmath_CreateVector(&expected, -2, -4, -6);
-    vecmath_SubtractTuples(&t1, &t2);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_TRUE(vecmath_IsVector(&t1));
+    Tuple4d t1 = {3, 2, 1, 1};
+    Tuple4d t2 = {5, 6, 7, 1};
+    Tuple4d expected = {-2, -4, -6, 0};
+    vecmath_SubtractTuples4d(&t1, &t2);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_TRUE(vecmath_IsVectorTuple4d(&t1));
 }
 
 void test_vecmath_SubtractingVectorFromPoint_CreatesPoint(void)
 {
-    Tuple t1, t2;
-    Tuple expected;
-    vecmath_CreatePoint(&t1, 3, 2, 1);
-    vecmath_CreateVector(&t2, 5, 6, 7);
-    vecmath_CreatePoint(&expected, -2, -4, -6);
-    vecmath_SubtractTuples(&t1, &t2);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_TRUE(vecmath_IsPoint(&t1));
+    Tuple4d t1 = {3, 2, 1, 1}; // Point
+    Tuple4d t2 = {5, 6, 7, 0}; // Vector
+    Tuple4d expected = {-2, -4, -6, 1}; // Point
+    vecmath_SubtractTuples4d(&t1, &t2);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_TRUE(vecmath_IsPointTuple4d(&t1));
 }
 
 void test_vecmath_SubtractingVectorFromVector_CreatesVector(void)
 {
-    Tuple t1, t2;
-    Tuple expected;
-    vecmath_CreateVector(&t1, 3, 2, 1);
-    vecmath_CreateVector(&t2, 5, 6, 7);
-    vecmath_CreateVector(&expected, -2, -4, -6);
-    vecmath_SubtractTuples(&t1, &t2);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_TRUE(vecmath_IsVector(&t1));
+    Tuple4d t1 = {3, 2, 1, 0}; // Vector
+    Tuple4d t2 = {5, 6, 7, 0}; // Vector
+    Tuple4d expected = {-2, -4, -6, 0}; // Vector
+    vecmath_SubtractTuples4d(&t1, &t2);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_TRUE(vecmath_IsVectorTuple4d(&t1));
 }
 
 void test_vecmath_SubtractingVectorFromNull_NegatesIt(void)
 {
-    Tuple t1, t2;
-    Tuple expected;
-    vecmath_CreateVector(&t1, 0, 0, 0);
-    vecmath_CreateVector(&t2, 1, -2, 3);
-    vecmath_CreateVector(&expected, -1, 2, -3);
-    vecmath_SubtractTuples(&t1, &t2);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_TRUE(vecmath_IsVector(&t1));
+    Tuple4d t1 = {0,0,0,0};
+    Tuple4d t2 = {1, -2, 3, 0};
+    Tuple4d expected = {-1, 2, -3, 0};
+    vecmath_SubtractTuples4d(&t1, &t2);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_TRUE(vecmath_IsVectorTuple4d(&t1));
 }
 
-void test_vecmath_NegateTuple(void)
+void test_vecmath_NegateTuple4d(void)
 {
-    Tuple t1;
-    Tuple expected;
-    vecmath_CreateTuple(&t1, 1, -2, 3, -4);
-    vecmath_CreateTuple(&expected, -1, 2, -3, 4);
-    vecmath_NegateTuple(&t1);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
+    Tuple4d t1 = {1, -2, 3, -4};
+    Tuple4d expected = {-1, 2, -3, 4};
+    vecmath_NegateTuple4d(&t1);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
 }
 
-void test_vecmath_ScaleTuple(void)
+void test_vecmath_ScaleTuple4d(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {1, -2, 3, -4};
     float scalar = 3.5;
-    Tuple expected;
-    vecmath_CreateTuple(&t1, 1, -2, 3, -4);
-    vecmath_CreateTuple(&expected, 3.5, -7, 10.5, -14);
-    vecmath_ScaleTuple(&t1, scalar);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
+    Tuple4d expected = {3.5, -7, 10.5, -14};
+    vecmath_ScaleTuple4d(&t1, scalar);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
 }
 
-void test_vecmath_ScaleTupleByFraction(void)
+void test_vecmath_ScaleTuple4dByFraction(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {1, -2, 3, -4};
     float scalar = 0.5;
-    Tuple expected;
-    vecmath_CreateTuple(&t1, 1, -2, 3, -4);
-    vecmath_CreateTuple(&expected, 0.5, -1, 1.5, -2);
-    vecmath_ScaleTuple(&t1, scalar);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
+    Tuple4d expected = {0.5, -1, 1.5, -2};
+    vecmath_ScaleTuple4d(&t1, scalar);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
 }
 
-void test_vecmath_DivideTuple(void)
+void test_vecmath_DivideTuple4d(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {1, -2, 3, -4};
     float scalar = 2;
-    Tuple expected;
-    vecmath_CreateTuple(&t1, 1, -2, 3, -4);
-    vecmath_CreateTuple(&expected, 0.5, -1, 1.5, -2);
-    vecmath_DivideTuple(&t1, scalar);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
+    Tuple4d expected = {0.5, -1, 1.5, -2};
+    vecmath_DivideTuple4d(&t1, scalar);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
 }
 
 void test_vecmath_Magnitude_x1(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {1, 0, 0, 0}; // Vector
     float magnitude;
     float expected = 1;
-    vecmath_CreateVector(&t1, 1, 0, 0);
-//    printf("x:%f, y:%f, z:%f, w:%f", t1.x, t1.y, t1.z, t1.w);
-    magnitude = vecmath_Magnitude(&t1);
+    magnitude = vecmath_MagnitudeTuple4d(&t1);
+
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, magnitude);
 }
 
 void test_vecmath_Magnitude_y1(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {0, 1, 0, 0}; // Vector
     float magnitude;
     float expected = 1;
-    vecmath_CreateVector(&t1, 0, 1, 0);
-    magnitude = vecmath_Magnitude(&t1);
+    magnitude = vecmath_MagnitudeTuple4d(&t1);
+    
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, magnitude);
 }
 
 void test_vecmath_Magnitude_z1(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {0, 0, 1, 0}; // Vector
     float magnitude;
     float expected = 1;
-    vecmath_CreateVector(&t1, 0, 0, 1);
-    magnitude = vecmath_Magnitude(&t1);
+    magnitude = vecmath_MagnitudeTuple4d(&t1);
+    
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, magnitude);
 }
 
 void test_vecmath_Magnitude_123(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {1, 2, 3, 0}; // Vector
     float magnitude;
     float expected = sqrt(14);
-    vecmath_CreateVector(&t1, 1, 2, 3);
-    magnitude = vecmath_Magnitude(&t1);
+    magnitude = vecmath_MagnitudeTuple4d(&t1);
+    
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, magnitude);
 }
 
 void test_vecmath_Magnitude_minus_123(void)
 {
-    Tuple t1;
+    Tuple4d t1 = {-1, -2, -3, 0}; // Vector
     float magnitude;
     float expected = sqrt(14);
-    vecmath_CreateVector(&t1, -1, -2, -3);
-    magnitude = vecmath_Magnitude(&t1);
+    magnitude = vecmath_MagnitudeTuple4d(&t1);
+    
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, magnitude);
 }
 
 void test_vecmath_Normalize_x4(void)
 {
-    Tuple t1, expected;
-    vecmath_CreateVector(&t1, 4, 0, 0);
-    vecmath_CreateVector(&expected, 1, 0, 0);
-    vecmath_Normalize(&t1);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t1, &expected));
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, vecmath_Magnitude(&t1));
+    Tuple4d t1 = {4, 0, 0, 0};
+    Tuple4d expected = {1, 0, 0, 0};
+    vecmath_NormalizeTuple4d(&t1);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t1, &expected));
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, vecmath_MagnitudeTuple4d(&t1));
 }
 
 void test_vecmath_Normalize_123(void)
 {
-    Tuple t, expected;
-    vecmath_CreateVector(&t, 1, 2, 3);
-    float length = vecmath_Magnitude(&t);
-    vecmath_CreateVector(&expected, 1/length, 2/length, 3/length);
-    vecmath_Normalize(&t);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&t, &expected));
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, vecmath_Magnitude(&t));
+    Tuple4d t = {1, 2, 3, 0};
+    float length = vecmath_MagnitudeTuple4d(&t);
+    Tuple4d expected = {1/length, 2/length, 3/length, 0};
+    vecmath_NormalizeTuple4d(&t);
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&t, &expected));
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, vecmath_MagnitudeTuple4d(&t));
 }
 
 void test_vecmath_DotProduct(void)
 {
-    Tuple t1, t2;
+    Tuple4d t1 = {1,2,3,0};
+    Tuple4d t2 = {2,3,4,0};
     float expected = 20;
-    vecmath_CreateVector(&t1, 1, 2, 3);
-    vecmath_CreateVector(&t2, 2, 3, 4);
-    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, vecmath_DotProduct(&t1, &t2));
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected, vecmath_DotProductTuple4d(&t1, &t2));
 }
 
 void test_vecmath_CrossProduct(void)
 {
-    Tuple t1, t2, result1, result2, expected1, expected2;
-    vecmath_CreateVector(&t1, 1, 2, 3);
-    vecmath_CreateVector(&t2, 2, 3, 4);
-    vecmath_CreateVector(&expected1, -1, 2, -1);
-    vecmath_CreateVector(&expected2, 1, -2, 1);
-    vecmath_CrossProduct(&result1, &t1, &t2);
-    vecmath_CrossProduct(&result2, &t2, &t1);
-//    vecmath_PrintTuple(&result1);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&result1, &expected1));
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&result2, &expected2));
+    Tuple4d t1 = {1,2,3,0};
+    Tuple4d t2 = {2,3,4,0};
+    Tuple4d expected1 = {-1,2,-1,0};
+    Tuple4d expected2 = {1,-2,1,0};
+    Tuple4d result1 = {0,0,0,0};
+    Tuple4d result2 = {0,0,0,0};
+    vecmath_CrossProductTuple4d(&result1, &t1, &t2);
+    vecmath_CrossProductTuple4d(&result2, &t2, &t1);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&result1, &expected1));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&result2, &expected2));
 }
 
 void test_vecmath_CreateMatrices(void)
@@ -352,17 +331,14 @@ void test_vecmath_MultiplyMatrix4dByTuple4d(void)
         {8, 6, 4, 1},
         {0, 0, 0, 1}
     };
+    Tuple4d a = {1, 2, 3, 1};
+    Tuple4d expected = {18, 24, 33, 1};
+    vecmath_MultiplyTuple4dByMatrix4d(&a, &m);
 
-    Tuple a;
-    vecmath_CreatePoint(&a, 1, 2, 3);
-    Tuple expected; 
-    vecmath_CreatePoint(&expected, 18, 24, 33);
-
-    vecmath_MultiplyTupleByMatrix(&a, &m);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&expected, &a));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &a));
 }
 
-void test_vecmath_MultiplyTupleByIdentityMatrix(void)
+void test_vecmath_MultiplyTuple4dByIdentityMatrix(void)
 {
     Matrix4d m = {
         {1,0,0,0},
@@ -370,13 +346,11 @@ void test_vecmath_MultiplyTupleByIdentityMatrix(void)
         {0,0,1,0},
         {0,0,0,1}
     };
-    Tuple a;
-    vecmath_CreateTuple(&a, 1, 2, 3, 4);
-    Tuple expected; 
-    vecmath_CreateTuple(&expected, 1, 2, 3, 4);
+    Tuple4d a ={1, 2, 3, 4};
+    Tuple4d expected = {1, 2, 3, 4};
+    vecmath_MultiplyTuple4dByMatrix4d(&a, &m);
 
-    vecmath_MultiplyTupleByMatrix(&a, &m);
-    TEST_ASSERT_TRUE(vecmath_AreEqualTuples(&expected, &a));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &a));
 }
 
 void test_vecmath_TransposeMatrix4d(void)
@@ -394,7 +368,7 @@ void test_vecmath_TransposeMatrix4d(void)
         {0,8,3,8}
     };
 
-    vecmath_TranssposeMatrix(&m);
+    vecmath_TranssposeMatrix4d(&m);
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &m));
 }
 
@@ -412,7 +386,7 @@ void test_vecmath_TransposeIdentityIsIdentity(void)
         {0,0,1,0},
         {0,0,0,1}
     };
-    vecmath_TranssposeMatrix(&m);
+    vecmath_TranssposeMatrix4d(&m);
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &m));
 }
 
@@ -497,6 +471,7 @@ void test_vecmath_DeterminantOfMatrix3d(void)
         {-5, 8, -4},
         {2, 6, 4}
     };
+
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 56, vecmath_CofactorMatrix3d(&m, 0, 0));
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 12, vecmath_CofactorMatrix3d(&m, 0, 1));
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, -46, vecmath_CofactorMatrix3d(&m, 0, 2));
@@ -512,6 +487,7 @@ void test_vecmath_DeterminantOfMatrix4d(void)
         {1, 2, -9, 6},
         {-6, 7, 7, -9}
     };
+
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 690, vecmath_CofactorMatrix4d(&m, 0, 0));
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 447, vecmath_CofactorMatrix4d(&m, 0, 1));
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 210, vecmath_CofactorMatrix4d(&m, 0, 2));
@@ -528,6 +504,7 @@ void test_vecmath_IsInvertibleMatrix4d(void)
         {4,-9,3,-7},
         {9,1,7,-6}
     };
+
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, -2120, vecmath_DeterminantMatrix4d(&m));
     TEST_ASSERT_TRUE(vecmath_IsInvertibleMatrix4d(&m));
 }
@@ -540,6 +517,7 @@ void test_vecmath_IsNotInvertibleMatrix4d(void)
         {0,-5,1,-5},
         {0,0,0,0}
     };
+
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0, vecmath_DeterminantMatrix4d(&m));
     TEST_ASSERT_FALSE(vecmath_IsInvertibleMatrix4d(&m));
 }
@@ -567,10 +545,12 @@ void test_vecmath_InverseMatrix4d(void)
         {-0.07895,-0.22368,-0.05263, 0.19737},
         {-0.52256,-0.81391,-0.30075, 0.30639}
     };
+
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &b));
 
     Matrix4d c = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
     vecmath_FastInverseMatrix4d(&a, &c);
+
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &c));
 }
 
@@ -590,7 +570,7 @@ void test_vecmath_MoreInverseMatrix4d(void)
         { 0.35897,  0.35897,  0.43590,  0.92308},
         {-0.69231, -0.69231, -0.76923, -1.92308}
     };
-//    vecmath_PrintMatrix4d(&b);
+
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &b));
 }
 
@@ -610,7 +590,7 @@ void test_vecmath_EvenMoreInverseMatrix4d(void)
         {-0.02901,-0.14630,-0.10926, 0.12963},
         { 0.17778, 0.06667,-0.26667, 0.33333}
     };
-//    vecmath_PrintMatrix4d(&b);
+
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &b));
 }
 
@@ -638,7 +618,7 @@ void test_vecmath_MultiplyProductByInverse(void)
         {-4, 4, 4, 1},
         {-6, 5, -1, 1}
     };
-    // vecmath_PrintMatrix4d(&a);
+
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected_is_a, &a));
 }
 

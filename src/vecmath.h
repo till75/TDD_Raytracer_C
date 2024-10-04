@@ -5,48 +5,30 @@
 
 static float EPSILON = 0.00001f;
 
-typedef struct 
-{
-    float x;
-    float y;
-    float z;
-    float w;
-} Tuple;
-
-// typedef struct 
-// {
-//     float rows[4][4];
-// } Matrix4d;
-
+typedef float Tuple4d[4];
 typedef float Matrix2d[2][2];
 typedef float Matrix3d[3][3];
 typedef float Matrix4d[4][4];
 
-void vecmath_PrintTuple(Tuple*);
+bool vecmath_IsPointTuple4d(Tuple4d*);
+bool vecmath_IsVectorTuple4d(Tuple4d*);
+bool vecmath_AreEqualTuples4d(Tuple4d*, Tuple4d*);
+void vecmath_AddTuples4d(Tuple4d*, Tuple4d*);
+void vecmath_SubtractTuples4d(Tuple4d*, Tuple4d*);
+void vecmath_NegateTuple4d(Tuple4d*);
+void vecmath_ScaleTuple4d(Tuple4d*, float);
+void vecmath_DivideTuple4d(Tuple4d*, float);
+float vecmath_MagnitudeTuple4d(Tuple4d*);
+void vecmath_NormalizeTuple4d(Tuple4d*);
+float vecmath_DotProductTuple4d(Tuple4d*, Tuple4d*);
+void vecmath_CrossProductTuple4d(Tuple4d*, Tuple4d*, Tuple4d*);
+void vecmath_MultiplyTuple4dByMatrix4d(Tuple4d*, Matrix4d*);
 void vecmath_PrintMatrix4d(Matrix4d*);
-void vecmath_CreateTuple(Tuple*, float, float, float, float);
-void vecmath_CreatePoint(Tuple*, float, float, float);
-void vecmath_CreateVector(Tuple*, float, float, float);
-//void vecmath_CreateMatrix4d(Matrix4d*, float*);
-float vecmath_GetItem(Matrix4d*, int, int);
-bool vecmath_IsPoint(Tuple*);
-bool vecmath_IsVector(Tuple*);
-bool vecmath_AreEqualTuples(Tuple*, Tuple*);
 bool vecmath_AreEqualMatrices2d(Matrix2d*, Matrix2d*);
 bool vecmath_AreEqualMatrices3d(Matrix3d*, Matrix3d*);
 bool vecmath_AreEqualMatrices4d(Matrix4d*, Matrix4d*);
-void vecmath_AddTuples(Tuple*, Tuple*);
-void vecmath_SubtractTuples (Tuple*, Tuple*);
-void vecmath_NegateTuple(Tuple*);
-void vecmath_ScaleTuple(Tuple*, float);
-void vecmath_DivideTuple(Tuple*, float);
-float vecmath_Magnitude(Tuple*);
-void vecmath_Normalize(Tuple*);
-float vecmath_DotProduct(Tuple*, Tuple*);
-void vecmath_CrossProduct(Tuple*, Tuple*, Tuple*);
 void vecmath_MultiplyMatrix4d(Matrix4d*, Matrix4d*);
-void vecmath_MultiplyTupleByMatrix(Tuple*, Matrix4d*);
-void vecmath_TranssposeMatrix(Matrix4d*);
+void vecmath_TranssposeMatrix4d(Matrix4d*);
 float vecmath_DeterminantMatrix2d(Matrix2d*);
 void vecmath_SubmatrixOfMatrix3d(Matrix3d*, Matrix2d*, int, int);
 void vecmath_SubmatrixOfMatrix4d(Matrix4d*, Matrix3d*, int, int);

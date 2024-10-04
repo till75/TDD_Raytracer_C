@@ -1,0 +1,14 @@
+The required Ceedling plugin 'xml_tests_report' is not enabled. You have to edit your 'project.xml' file to enable the plugin.
+see https://github.com/ThrowTheSwitch/Ceedling/blob/master/docs/CeedlingPacket.md#tool-element-runtime-substitution-notational-substitution
+
+
+Stacktrace: 
+	at y.syncTopLevel (c:\Users\a1071177\.vscode\extensions\ms-vscode.test-adapter-converter-0.1.9\out\extension.js:4:7)
+	at i.value (c:\Users\a1071177\.vscode\extensions\ms-vscode.test-adapter-converter-0.1.9\out\extension.js:1:3050)
+	at r.B (c:\Users\a1071177\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\api\node\extensionHostProcess.js:90:732)
+	at r.fire (c:\Users\a1071177\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\api\node\extensionHostProcess.js:90:949)
+	at i.value (c:\Users\a1071177\.vscode\extensions\hbenl.vscode-test-explorer-2.22.1\out\hub\testHub.js:53:43)
+	at r.B (c:\Users\a1071177\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\api\node\extensionHostProcess.js:90:732)
+	at r.C (c:\Users\a1071177\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\api\node\extensionHostProcess.js:90:802)
+	at r.fire (c:\Users\a1071177\AppData\Local\Programs\Microsoft VS Code\resources\app\out\vs\workbench\api\node\extensionHostProcess.js:90:1018)
+	at yr.load (c:\Users\a1071177\.vscode\extensions\numaru.vscode-ceedling-test-adapter-1.12.0\out\src\main.js:43:2974)

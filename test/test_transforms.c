@@ -4,6 +4,8 @@
 
 #include "transforms.h"
 #include "vecmath.h"
+//#include <math.h>
+#define M_PI 3.14159265358979323846
 
 void setUp(void)
 {
@@ -94,5 +96,69 @@ void test_transforms_ScalingWithMinusOneIsReflection(void)
     Tuple4d expected = {-2, 3, 4, 1};
 
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetRotationXMatrix4d(void)
+{
+    Matrix4d half_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    Matrix4d full_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetRotationXMatrix4d(&half_quarter, M_PI / 4.0);
+    transforms_GetRotationXMatrix4d(&full_quarter, M_PI / 2.0);
+    Tuple4d p1 = {0, 1, 0, 1}; // Point
+    Tuple4d p2 = {0, 1, 0, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p1, &half_quarter);
+    vecmath_MultiplyTuple4dByMatrix4d(&p2, &full_quarter);
+    Tuple4d expected1 = {0, sqrt(2)/2, sqrt(2)/2, 1};
+    Tuple4d expected2 = {0, 0, 1, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected1, &p1));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected2, &p2));
+}
+
+void test_transforms_InverseRotationRotatesInOppositeDirection(void)
+{
+    Matrix4d half_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    Matrix4d inverse_half_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetRotationXMatrix4d(&half_quarter, M_PI / 4.0);
+    vecmath_InverseMatrix4d(&half_quarter, &inverse_half_quarter);
+    Tuple4d p1 = {0, 1, 0, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p1, &inverse_half_quarter);
+    Tuple4d expected1 = {0, sqrt(2)/2, -sqrt(2)/2, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected1, &p1));
+}
+
+void test_transforms_GetRotationYMatrix4d(void)
+{
+    Matrix4d half_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    Matrix4d full_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetRotationYMatrix4d(&half_quarter, M_PI / 4.0);
+    transforms_GetRotationYMatrix4d(&full_quarter, M_PI / 2.0);
+    Tuple4d p1 = {0, 0, 1, 1}; // Point
+    Tuple4d p2 = {0, 0, 1, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p1, &half_quarter);
+    vecmath_MultiplyTuple4dByMatrix4d(&p2, &full_quarter);
+    Tuple4d expected1 = {sqrt(2)/2, 0, sqrt(2)/2, 1};
+    Tuple4d expected2 = {1, 0, 0, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected1, &p1));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected2, &p2));
+}
+
+void test_transforms_GetRotationZMatrix4d(void)
+{
+    Matrix4d half_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    Matrix4d full_quarter = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetRotationZMatrix4d(&half_quarter, M_PI / 4.0);
+    transforms_GetRotationZMatrix4d(&full_quarter, M_PI / 2.0);
+    Tuple4d p1 = {0, 1, 0, 1}; // Point
+    Tuple4d p2 = {0, 1, 0, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p1, &half_quarter);
+    vecmath_MultiplyTuple4dByMatrix4d(&p2, &full_quarter);
+    Tuple4d expected1 = {-sqrt(2)/2, sqrt(2)/2, 0, 1};
+    Tuple4d expected2 = {-1, 0, 0, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected1, &p1));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected2, &p2));
 }
 #endif // TEST

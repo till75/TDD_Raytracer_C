@@ -227,4 +227,44 @@ void test_transforms_GetShearingZYMatrix4d(void)
 
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
 }
+
+void test_transforms_ApplyIndividualTransformationsInSequence(void)
+{
+        Tuple4d p = {1,0,1,1};
+        Matrix4d rot_x = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetRotationXMatrix4d(&rot_x, M_PI / 2);
+        Matrix4d scale_all_5 = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetScalingMatrix4d(&scale_all_5, 5, 5, 5);
+        Matrix4d transl = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetTranslationMatrix4d(&transl, 10, 5, 7);
+
+        vecmath_MultiplyTuple4dByMatrix4d(&p, &rot_x);
+        Tuple4d p2 = {1, -1, 0, 1};
+        TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&p2, &p));
+
+        vecmath_MultiplyTuple4dByMatrix4d(&p, &scale_all_5);
+        Tuple4d p3 = {5, -5, 0, 1};
+        TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&p3, &p));
+
+        vecmath_MultiplyTuple4dByMatrix4d(&p, &transl);
+        Tuple4d p4 = {15, 0, 7, 1};
+        TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&p4, &p));
+}
+
+void test_transforms_ChainedTransformationsInReverseOrder(void)
+{
+        Tuple4d p = {1,0,1,1};
+        Matrix4d rot_x = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetRotationXMatrix4d(&rot_x, M_PI / 2);
+        Matrix4d scale_all_5 = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetScalingMatrix4d(&scale_all_5, 5, 5, 5);
+        Matrix4d transl = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        transforms_GetTranslationMatrix4d(&transl, 10, 5, 7);
+
+        vecmath_MultiplyMatrix4d(&transl, &scale_all_5);
+        vecmath_MultiplyMatrix4d(&transl, &rot_x);
+        vecmath_MultiplyTuple4dByMatrix4d(&p, &transl);
+        Tuple4d p2 = {15, 0, 7, 1};
+        TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&p2, &p));
+}
 #endif // TEST

@@ -47,3 +47,11 @@ void transforms_GetRotationZMatrix4d(Matrix4d* res, float rad)
     (*res)[2][0] = 0; (*res)[2][1] = 0; (*res)[2][2] = 1; (*res)[2][3] = 0; 
     (*res)[3][0] = 0; (*res)[3][1] = 0; (*res)[3][2] = 0; (*res)[3][3] = 1; 
 }
+
+void transforms_GetShearingMatrix4d(Matrix4d* res, float x_y, float x_z, float y_x, float y_z, float z_x, float z_y)
+{
+    (*res)[0][0] =  1; (*res)[0][1] =x_y; (*res)[0][2] =x_z; (*res)[0][3] = 0; 
+    (*res)[1][0] =y_x; (*res)[1][1] =  1; (*res)[1][2] =y_z; (*res)[1][3] = 0; 
+    (*res)[2][0] =z_x; (*res)[2][1] =z_y; (*res)[2][2] =  1; (*res)[2][3] = 0; 
+    (*res)[3][0] =  0; (*res)[3][1] =  0; (*res)[3][2] =  0; (*res)[3][3] = 1; 
+}

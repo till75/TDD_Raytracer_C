@@ -161,4 +161,70 @@ void test_transforms_GetRotationZMatrix4d(void)
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected1, &p1));
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected2, &p2));
 }
+
+void test_transforms_GetShearingXYMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 1, 0, 0, 0, 0, 0);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {5, 3, 4, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetShearingXZMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 0, 1, 0, 0, 0, 0);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {6, 3, 4, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetShearingYXMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 0, 0, 1, 0, 0, 0);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {2, 5, 4, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetShearingYZMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 0, 0, 0, 1, 0, 0);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {2, 7, 4, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetShearingZXMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 0, 0, 0, 0, 1, 0);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {2, 3, 6, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
+
+void test_transforms_GetShearingZYMatrix4d(void)
+{
+    Matrix4d shear = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    transforms_GetShearingMatrix4d(&shear, 0, 0, 0, 0, 0, 1);
+    Tuple4d p = {2, 3, 4, 1}; // Point
+    vecmath_MultiplyTuple4dByMatrix4d(&p, &shear);
+    Tuple4d expected = {2, 3, 7, 1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expected, &p));
+}
 #endif // TEST

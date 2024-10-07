@@ -10,6 +10,7 @@ typedef float Matrix2d[2][2];
 typedef float Matrix3d[3][3];
 typedef float Matrix4d[4][4];
 
+void vecmath_PrintTuple4d(Tuple4d*);
 bool vecmath_IsPointTuple4d(Tuple4d*);
 bool vecmath_IsVectorTuple4d(Tuple4d*);
 bool vecmath_AreEqualTuples4d(Tuple4d*, Tuple4d*);

@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void vecmath_PrintTuple4d(Tuple4d* t)
+{
+    printf( "| %8.5f | %8.5f | %8.5f | %8.5f |\n", (*t)[0], (*t)[1], (*t)[2], (*t)[3]); 
+}
+
 void vecmath_PrintMatrix4d(Matrix4d* m)
 {
     for(int r=0; r<4; r++)

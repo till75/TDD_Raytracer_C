@@ -42,4 +42,5 @@ bool vecmath_IsInvertibleMatrix4d(Matrix4d*);
 void vecmath_InverseMatrix4d(Matrix4d*, Matrix4d*);
 void vecmath_FastInverseMatrix4d(Matrix4d*, Matrix4d*);
 void vecmath_ScaleMatrix4d(Matrix4d*, float);
+void vecmath_CopyTuple4d(Tuple4d*, Tuple4d*);
 #endif // VECMATH_H

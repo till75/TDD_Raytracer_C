@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void vecmath_CopyTuple4d(Tuple4d* t_from, Tuple4d* t_to)
+{
+    (*t_to)[0] = (*t_from)[0];
+    (*t_to)[1] = (*t_from)[1];
+    (*t_to)[2] = (*t_from)[2];
+    (*t_to)[3] = (*t_from)[3];
+}
+
 void vecmath_PrintTuple4d(Tuple4d* t)
 {
     printf( "| %8.5f | %8.5f | %8.5f | %8.5f |\n", (*t)[0], (*t)[1], (*t)[2], (*t)[3]); 

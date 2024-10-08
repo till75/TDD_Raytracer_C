@@ -29,19 +29,18 @@ void ray_Position(Ray* r, Tuple4d* res, float t)
     vecmath_AddTuples4d(res, &tmp); 
 }
 
-void ray_CreateSphere(Object* s, Tuple4d* c, float r)
-{
-    vecmath_CopyTuple4d(c, &(s->center));
-    s->radius = r;
-    s->type = SPHERE;
-}
 
 // TODO: Consider passing sorted intersections in and inserting hits to keep the array sorted!
-void ray_IntersectSphere(Ray* r, Object* obj, Intersections* i)
+void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* i)
 {
-    Tuple4d sphere_to_ray = {r->origin[0], r->origin[1], r->origin[2], 0};
-    float a = vecmath_DotProductTuple4d(&(r->direction), &(r->direction));
-    float b = 2.0 * vecmath_DotProductTuple4d(&(r->direction), &sphere_to_ray);
+    Matrix4d inverse_transform;
+    vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
+    Ray r;
+    ray_Transform(ray, &r, &inverse_transform);
+    
+    Tuple4d sphere_to_ray = {r.origin[0], r.origin[1], r.origin[2], 0};
+    float a = vecmath_DotProductTuple4d(&(r.direction), &(r.direction));
+    float b = 2.0 * vecmath_DotProductTuple4d(&(r.direction), &sphere_to_ray);
     float c = vecmath_DotProductTuple4d(&sphere_to_ray, &sphere_to_ray) - 1.0;
 
     float discriminant = b*b - 4.0 * a * c;
@@ -69,13 +68,6 @@ void ray_IntersectSphere(Ray* r, Object* obj, Intersections* i)
     }
 }
 
-void ray_CopyObject(Object* obj_from, Object* obj_to)
-{
-    vecmath_CopyTuple4d(&(obj_from->center), &(obj_to->center));
-    obj_to->radius = obj_from->radius;
-    obj_to->type = obj_from->type;
-}
-
 void ray_Hit(Intersections* ints, Intersection* res)
 {
     int i = 0;
@@ -92,7 +84,7 @@ void ray_Hit(Intersections* ints, Intersection* res)
     } while (i < ints->count);
     if (i_closest >= 0)
     {
-        ray_CopyObject(&(ints->intersections[i_closest].object), &(res->object));
+        res->object = ints->intersections[i_closest].object;
         res->t = ints->intersections[i_closest].t;
     }
     else
@@ -135,4 +127,18 @@ void ray_BubbleSortIntersections(Intersections* ints)
             }
         }
     }
+}
+
+void ray_Transform(Ray* r, Ray* r_res, Matrix4d* transform)
+{
+    *r_res = *r;
+    //Matrix4d m;
+    //vecmath_FastInverseMatrix4d(transform, &m);
+    vecmath_MultiplyTuple4dByMatrix4d(&(r_res->origin), transform);
+    vecmath_MultiplyTuple4dByMatrix4d(&(r_res->direction), transform);
+}
+
+void ray_ObjectSetTransform(Object* o, Matrix4d* m)
+{
+    vecmath_CopyMatrix4d(m, &(o->transform));
 }

@@ -15,8 +15,7 @@ typedef enum {SPHERE, TRIANGLE, CYLINDER, PLANE, OBJ_NONE} ObjectType;
 typedef struct
 {
     ObjectType type;
-    Tuple4d center;
-    float radius;
+    Matrix4d transform;
 } Object;
 
 typedef struct
@@ -31,15 +30,17 @@ typedef struct
     int count;
 } Intersections;
 
-void ray_CopyObject(Object*, Object*);
+//void ray_CopyObject(Object*, Object*);
 void ray_Create(Ray*, Tuple4d*, Tuple4d*);
 void ray_GetOriginCopy(Ray*, Tuple4d*);
-void ray_GetDirectionCopy(Ray*, Tuple4d*);
+//void ray_GetDirectionCopy(Ray*, Tuple4d*);
 void ray_Position(Ray*, Tuple4d*, float);
 void ray_CreateSphere(Object*, Tuple4d*, float);
 void ray_IntersectSphere(Ray*, Object*, Intersections*);
 void ray_Hit(Intersections*, Intersection*);
 void ray_BubbleSortIntegers(int[], int);
 void ray_BubbleSortIntersections(Intersections*);
+void ray_Transform(Ray*, Ray*, Matrix4d*);
+void ray_ObjectSetTransform(Object*, Matrix4d*);
 
 #endif // RAY_H

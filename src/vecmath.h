@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define UNITY_TRANSFORM {{1.0f,0.0f,0.0f,0.0f},{0.0f,1.0f,0.0f,0.0f},{0.0f,0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f,1.0f}}
+
 static float EPSILON = 0.00001f;
 
 typedef float Tuple4d[4];
@@ -43,4 +45,5 @@ void vecmath_InverseMatrix4d(Matrix4d*, Matrix4d*);
 void vecmath_FastInverseMatrix4d(Matrix4d*, Matrix4d*);
 void vecmath_ScaleMatrix4d(Matrix4d*, float);
 void vecmath_CopyTuple4d(Tuple4d*, Tuple4d*);
+void vecmath_CopyMatrix4d(Matrix4d*, Matrix4d*);
 #endif // VECMATH_H

@@ -26,8 +26,6 @@ void test_ray_CreateAndQuery(void)
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&(r.direction), &direction));
 }
 
-#endif // TEST
-
 void test_ray_Position(void)
 {
 
@@ -46,8 +44,9 @@ void test_ray_Position(void)
 
 void test_ray_IntersectSphereInTwoPoints(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};
+//    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -59,8 +58,8 @@ void test_ray_IntersectSphereInTwoPoints(void)
 
 void test_ray_IntersectSphereInTangent(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};
+    //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,1,-5,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -72,8 +71,8 @@ void test_ray_IntersectSphereInTangent(void)
 
 void test_ray_IntersectSphereMisses(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};;
+    //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,2,-5,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -83,8 +82,8 @@ void test_ray_IntersectSphereMisses(void)
 
 void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};;
+    //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,0,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -96,8 +95,8 @@ void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 
 void test_ray_IntersectSphereBehindRay(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};;
+    //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -109,8 +108,8 @@ void test_ray_IntersectSphereBehindRay(void)
 
 void test_ray_IntersectionSavesIntersectedObject(void)
 {
-    Object s;
-    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
+    Object s = {SPHERE, UNITY_TRANSFORM};;
+    //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
     ray_IntersectSphere(&r, &s, &intersections);
@@ -124,7 +123,7 @@ void test_ray_IntersectionSavesIntersectedObject(void)
 
 void test_ray_Hit_AllIntersectionsPositive(void)
 {
-    Object sphere = {SPHERE, {0,0,0,1}, 1};
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {1, sphere};
     Intersection int2 = {2, sphere};
     Intersections ints;
@@ -140,7 +139,7 @@ void test_ray_Hit_AllIntersectionsPositive(void)
 
 void test_ray_Hit_SomeIntersectionsNegative(void)
 {
-    Object sphere = {SPHERE, {0,0,0,1}, 1};
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {-1, sphere};
     Intersection int2 = {1, sphere};
     Intersections ints;
@@ -155,7 +154,7 @@ void test_ray_Hit_SomeIntersectionsNegative(void)
 
 void test_ray_Hit_AllIntersectionsNegative(void)
 {
-    Object sphere = {SPHERE, {0,0,0,1}, 1};
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {-2, sphere};
     Intersection int2 = {-1, sphere};
     Intersections ints;
@@ -170,7 +169,7 @@ void test_ray_Hit_AllIntersectionsNegative(void)
 
 void test_ray_Hit_AlwaysLowestNonNegative(void)
 {
-    Object sphere = {SPHERE, {0,0,0,1}, 1};
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {5, sphere};
     Intersection int2 = {7, sphere};
     Intersection int3 = {-3, sphere};
@@ -202,3 +201,74 @@ void test_ray_BubbleSortInts(void)
 
     TEST_ASSERT_EQUAL_INT_ARRAY(sorted, list, 10);
 }
+
+void test_ray_TranslateRay(void)
+{
+    Ray r = {{1,2,3,1},{0,1,0,0}};
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, 3, 4, 5);
+    Ray r2;
+    ray_Transform(&r, &r2, &transl);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&((Tuple4d){4, 6, 8, 1}), &(r2.origin)));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&((Tuple4d){0, 1, 0, 0}), &(r2.direction)));
+}
+
+void test_ray_ScaleRay(void)
+{
+    Ray r = {{1,2,3,1},{0,1,0,0}};
+    Matrix4d scale;
+    transforms_GetScalingMatrix4d(&scale, 2, 3, 4);
+    Ray r2;
+    ray_Transform(&r, &r2, &scale);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&((Tuple4d){2, 6, 12, 1}), &(r2.origin)));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&((Tuple4d){0, 3, 0, 0}), &(r2.direction)));
+}
+
+void test_ray_SphereDefaultTransform(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d identity_matrix = UNITY_TRANSFORM;
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&identity_matrix, &(sphere.transform)));
+}
+
+void test_ray_SphereChangeTransform(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, 2, 3, 4);
+    ray_ObjectSetTransform(&sphere, &transl);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&transl, &(sphere.transform)));   
+}
+
+void test_ray_IntersectionWithScaledSphere(void)
+{
+    Object s = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d scale;
+    transforms_GetScalingMatrix4d(&scale, 2, 2, 2);
+    ray_ObjectSetTransform(&s, &scale);
+    Ray r = {{0,0,-5,1}, {0,0,1,0}};
+    Intersections intersections;
+    ray_IntersectSphere(&r, &s, &intersections);
+
+    TEST_ASSERT_EQUAL(2, intersections.count);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.0, intersections.intersections[0].t);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 7.0, intersections.intersections[1].t);
+}
+
+void test_ray_DoesNotIntersectWithTranslatedSphere(void)
+{
+    Object s = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, 5, 0, 0);
+    ray_ObjectSetTransform(&s, &transl);
+    Ray r = {{0,0,-5,1}, {0,0,1,0}};
+    Intersections intersections;
+    ray_IntersectSphere(&r, &s, &intersections);
+
+    TEST_ASSERT_EQUAL(0, intersections.count);
+}
+#endif // TEST

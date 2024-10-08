@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#define M_PI 3.14159265358979323846
 #define UNITY_TRANSFORM {{1.0f,0.0f,0.0f,0.0f},{0.0f,1.0f,0.0f,0.0f},{0.0f,0.0f,1.0f,0.0f},{0.0f,0.0f,0.0f,1.0f}}
 
 static float EPSILON = 0.00001f;

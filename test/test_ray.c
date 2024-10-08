@@ -185,4 +185,20 @@ void test_ray_Hit_AlwaysLowestNonNegative(void)
     ray_Hit(&ints, &result);
 
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, int4.t, result.t);
+
+    ray_BubbleSortIntersections(&ints);
+    float list[4] = {ints.intersections[0].t, ints.intersections[1].t, 
+                    ints.intersections[2].t, ints.intersections[3].t, };
+    float sorted[4] = {-3, 2, 5, 7};
+    TEST_ASSERT_EQUAL_FLOAT_ARRAY(sorted, list, 4);
+
+}
+
+void test_ray_BubbleSortInts(void)
+{
+    int list[10] = {6,1,-4,3,8,2,1,3,4,-7};
+    ray_BubbleSortIntegers(list, 10);
+    int sorted[10] = {-7,-4,1,1,2,3,3,4,6,8};
+
+    TEST_ASSERT_EQUAL_INT_ARRAY(sorted, list, 10);
 }

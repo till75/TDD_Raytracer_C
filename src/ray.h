@@ -39,5 +39,7 @@ void ray_Position(Ray*, Tuple4d*, float);
 void ray_CreateSphere(Object*, Tuple4d*, float);
 void ray_IntersectSphere(Ray*, Object*, Intersections*);
 void ray_Hit(Intersections*, Intersection*);
+void ray_BubbleSortIntegers(int[], int);
+void ray_BubbleSortIntersections(Intersections*);
 
 #endif // RAY_H

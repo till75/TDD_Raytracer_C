@@ -36,6 +36,7 @@ void ray_CreateSphere(Object* s, Tuple4d* c, float r)
     s->type = SPHERE;
 }
 
+// TODO: Consider passing sorted intersections in and inserting hits to keep the array sorted!
 void ray_IntersectSphere(Ray* r, Object* obj, Intersections* i)
 {
     Tuple4d sphere_to_ray = {r->origin[0], r->origin[1], r->origin[2], 0};
@@ -97,5 +98,41 @@ void ray_Hit(Intersections* ints, Intersection* res)
     else
     {
         res->object.type = OBJ_NONE;
+    }
+}
+
+void ray_BubbleSortIntegers(int a[], int array_size)
+{
+    int i, j, temp;
+    for (i = 0; i < (array_size - 1); ++i) 
+    {
+        for (j = 0; j < array_size - 1 - i; ++j )
+        {
+            if (a[j] > a[j+1]) 
+            {
+                temp = a[j+1];
+                a[j+1] = a[j];
+                a[j] = temp;
+            }
+        }
+    }
+}
+
+void ray_BubbleSortIntersections(Intersections* ints)
+{
+    int i, j;
+    Intersection temp;
+    int array_size = ints->count;
+    for (i = 0; i < (array_size - 1); ++i) 
+    {
+        for (j = 0; j < array_size - 1 - i; ++j )
+        {
+            if (ints->intersections[j].t > ints->intersections[j+1].t) 
+            {
+                temp = ints->intersections[j+1];
+                ints->intersections[j+1] = ints->intersections[j];
+                ints->intersections[j] = temp;
+            }
+        }
     }
 }

@@ -507,7 +507,7 @@ void test_ray_Lighting_LightBehindSurface(void)
     Tuple4d eyeV = {0,0,-1,0};
     Tuple4d n = {0,0,-1,0};
     PointLight light;
-    Tuple4d lightPos = {0,0,10};
+    Tuple4d lightPos = {0,0,10, 1};
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;

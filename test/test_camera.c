@@ -20,8 +20,8 @@ void tearDown(void)
 
 void test_camera_Create(void)
 {
-    int w = 20;
-    int h = 16;
+    int w = 640;
+    int h = 480;
     Color red = {1,0,0};
     Color black = {0,0,0};
     Canvas canvas;
@@ -60,10 +60,20 @@ void test_camera_Create(void)
     camera_Create(&cam, &cam_transform, w, h);
 
     Ray ray = {{0,0,0,0},{0,0,0,0}};
+    
     Matrix4d sphere_transform;
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
-    transforms_GetScalingMatrix4d(&sphere_transform, 1.2,0.6,1); 
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Object sphere;
+    ray_CreateSphere(&sphere, &mat);
+    transforms_GetScalingMatrix4d(&sphere_transform, 1,1,1); 
     vecmath_CopyMatrix4d(&sphere_transform, &(sphere.transform));
+    
+    PointLight light;
+    Tuple4d lightPos = {-10, 10, -10, 1};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+
     Object nothing = {OBJ_NONE, UNITY_TRANSFORM};
     Intersection clostestHit = {0, nothing};
     Intersections ints = {{clostestHit}, 1};
@@ -77,7 +87,16 @@ void test_camera_Create(void)
         ray_Hit(&ints, &clostestHit);
         if (clostestHit.object.type != OBJ_NONE)
         {
-            canvas_DrawPixel(&canvas, &red, x, y);
+            Tuple4d hitPos, normal, eye;
+            ray_Position(&ray, &hitPos, clostestHit.t);
+            ray_NormalAt(&(clostestHit.object), &hitPos, &normal);
+            vecmath_CopyTuple4d(&(ray.direction), &eye);
+            vecmath_NormalizeTuple4d(&eye);
+            vecmath_ScaleTuple4d(&eye, -1.0);
+            Color color;
+            ray_Lighting(&color, &(clostestHit.object.material), &light, &hitPos, &eye, &normal);
+            
+            canvas_DrawPixel(&canvas, &color, x, y);
             //printf("r-");
             clostestHit.object = nothing;
             ints.intersections[0] = clostestHit;

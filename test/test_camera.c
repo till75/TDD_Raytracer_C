@@ -20,8 +20,8 @@ void tearDown(void)
 
 void test_camera_Create(void)
 {
-    int w = 200;
-    int h = 160;
+    int w = 20;
+    int h = 16;
     Color red = {1,0,0};
     Color black = {0,0,0};
     Canvas canvas;
@@ -101,5 +101,6 @@ void test_camera_Create(void)
     canvas_PixelsToPPMFile(&canvas, "sphere.ppm");
     canvas_Destroy(&canvas);    
 }
+
 
 #endif // TEST

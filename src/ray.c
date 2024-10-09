@@ -143,3 +143,33 @@ void ray_ObjectSetTransform(Object* o, Matrix4d* m)
 {
     vecmath_CopyMatrix4d(m, &(o->transform));
 }
+
+void ray_NormalAt(Object* obj, Tuple4d* world_p, Tuple4d* n)
+{
+    Tuple4d object_p;
+    vecmath_CopyTuple4d(world_p, &object_p);
+    Matrix4d inverse_transform;
+    vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
+    vecmath_MultiplyTuple4dByMatrix4d(&object_p, &inverse_transform);
+
+    Tuple4d origin = {0,0,0,1};
+    vecmath_SubtractTuples4d(&object_p, &origin);
+    vecmath_CopyTuple4d(&object_p, n);
+
+    vecmath_TranssposeMatrix4d(&inverse_transform);
+    vecmath_MultiplyTuple4dByMatrix4d(n, &inverse_transform);
+    (*n)[3] = 0.0;
+    vecmath_NormalizeTuple4d(n);
+}
+
+void ray_Reflect(Tuple4d* vector, Tuple4d* normal, Tuple4d* reflected)
+{
+    Tuple4d tmp_n;
+    float dot = vecmath_DotProductTuple4d(vector, normal);
+    vecmath_CopyTuple4d(normal, &tmp_n);
+    vecmath_ScaleTuple4d(&tmp_n, 2.0 * dot);
+    Tuple4d tmp_v;
+    vecmath_CopyTuple4d(vector, &tmp_v);
+    vecmath_SubtractTuples4d(&tmp_v, &tmp_n);
+    vecmath_CopyTuple4d(&tmp_v, normal);
+}

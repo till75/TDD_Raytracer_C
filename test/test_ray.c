@@ -271,4 +271,104 @@ void test_ray_DoesNotIntersectWithTranslatedSphere(void)
 
     TEST_ASSERT_EQUAL(0, intersections.count);
 }
+
+void test_ray_CreateSphereNormalAtX1(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Tuple4d p = {1,0,0,1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {1,0,0,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateSphereNormalAtY1(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Tuple4d p = {0,1,0,1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {0,1,0,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateSphereNormalAtZ1(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Tuple4d p = {0,0,1,1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {0,0,1,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateSphereNormalAtXYZ(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    float tmp = sqrt(3)/3.0;
+    Tuple4d p = {tmp,tmp,tmp,1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {tmp,tmp,tmp,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, vecmath_MagnitudeTuple4d(&n));
+}
+
+void test_ray_CreateNormalOnTranslatedSphere(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, 0, 1, 0);
+    vecmath_CopyMatrix4d(&transl, &(sphere.transform));
+
+    Tuple4d p = {0, 1.70711,-0.70711, 1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {0, 0.70711, -0.70711, 0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateNormalOnScaledSphere(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d scale;
+    transforms_GetScalingMatrix4d(&scale, 1, 0.5, 1);
+    vecmath_CopyMatrix4d(&scale, &(sphere.transform));
+
+    float tmp = sqrt(2.0)/2.0;
+    Tuple4d p = {0, tmp, -tmp, 1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {0, 0.97014, -0.24254, 0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateReflectionAtNormal(void)
+{
+    Tuple4d v = {1, -1, 0, 0};
+    Tuple4d n = {0, 1, 0, 0};
+    Tuple4d r;
+    ray_Reflect(&v, &n, &r);
+    Tuple4d exp = {1,1,0,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &r));
+}
+
+void test_ray_CreateReflectionAtSlantedNormal(void)
+{
+    float tmp = sqrt(2.0)/2.0;
+    Tuple4d v = {0, -1, 0, 0};
+    Tuple4d n = {tmp, tmp, 0, 0};
+    Tuple4d r;
+    ray_Reflect(&v, &n, &r);
+    Tuple4d exp = {1,0,0,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &r));
+}
 #endif // TEST

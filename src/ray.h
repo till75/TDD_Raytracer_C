@@ -42,5 +42,7 @@ void ray_BubbleSortIntegers(int[], int);
 void ray_BubbleSortIntersections(Intersections*);
 void ray_Transform(Ray*, Ray*, Matrix4d*);
 void ray_ObjectSetTransform(Object*, Matrix4d*);
+void ray_NormalAt(Object*, Tuple4d*, Tuple4d*);
+void ray_Reflect(Tuple4d*, Tuple4d*, Tuple4d*);
 
 #endif // RAY_H

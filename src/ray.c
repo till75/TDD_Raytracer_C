@@ -171,5 +171,5 @@ void ray_Reflect(Tuple4d* vector, Tuple4d* normal, Tuple4d* reflected)
     Tuple4d tmp_v;
     vecmath_CopyTuple4d(vector, &tmp_v);
     vecmath_SubtractTuples4d(&tmp_v, &tmp_n);
-    vecmath_CopyTuple4d(&tmp_v, normal);
+    vecmath_CopyTuple4d(&tmp_v, reflected);
 }

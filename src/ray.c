@@ -1,8 +1,9 @@
 #include "ray.h"
-#include "vecmath.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
+#include <string.h>
 
 void ray_Create(Ray* r, Tuple4d* o, Tuple4d* d)
 {
@@ -18,6 +19,14 @@ void ray_GetOriginCopy(Ray* r, Tuple4d* p)
 void ray_GetDirectionCopy(Ray* r, Tuple4d* d)
 {
     vecmath_CopyTuple4d(&(r->direction), d);
+}
+
+void ray_CreateSphere(Object* obj, Material* mat)
+{
+    obj->type=SPHERE;
+    Matrix4d tr = UNITY_TRANSFORM;
+    vecmath_CopyMatrix4d(&tr, &(obj->transform));
+    memcpy(&(obj->material), mat, sizeof(obj->material)); 
 }
 
 void ray_Position(Ray* r, Tuple4d* res, float t)
@@ -172,4 +181,72 @@ void ray_Reflect(Tuple4d* vector, Tuple4d* normal, Tuple4d* reflected)
     vecmath_CopyTuple4d(vector, &tmp_v);
     vecmath_SubtractTuples4d(&tmp_v, &tmp_n);
     vecmath_CopyTuple4d(&tmp_v, reflected);
+}
+
+void ray_CreatePointLight(PointLight* pl, Tuple4d* p, Color* intensity)
+{
+    memcpy(&(pl->pos), p, sizeof(pl->pos));
+    memcpy(&(pl->intensity), intensity, sizeof(pl->intensity));
+}
+
+void ray_CreateDefaultMaterial(Material* m)
+{
+    (m->color).red = 1.0; (m->color).green = 1.0; (m->color).blue = 1.0;
+    m->ambient = 0.1;
+    m->diffuse = 0.9;
+    m->specular = 0.9;
+    m->shininess = 200.0;
+}
+
+void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* point, Tuple4d* eyeV, Tuple4d* normal)
+{
+    // Combine the surface color with the light's color/intensity
+    Color effective_color;
+    memcpy(&effective_color, &(mat->color), sizeof(effective_color));
+    color_MultiplyColors(&effective_color, &(light->intensity));
+
+    // Find the direction to the light source
+    Tuple4d lightV;
+    vecmath_CopyTuple4d(&(light->pos), &lightV);
+    vecmath_SubtractTuples4d(&lightV, point);
+    vecmath_NormalizeTuple4d(&lightV);
+
+    // Compute the ambient contribution
+    Color ambient;
+    memcpy(&ambient, &effective_color, sizeof(ambient));
+    color_ScaleColor(&ambient, mat->ambient);
+
+    // light_dot_normal represents the cosine of the angle between the
+    //  light vector and the normal vector. A negative number means the
+    //  light is on the other side of the surface.
+    Color diffuse = {0,0,0};
+    Color specular = {0,0,0};
+    float light_dot_normal = vecmath_DotProductTuple4d(&lightV, normal);
+    if (light_dot_normal >= 0.0) 
+    {
+        // Compute the diffuse contribution
+        memcpy(&diffuse, &effective_color, sizeof(diffuse));
+        color_ScaleColor(&diffuse, mat->diffuse);
+        color_ScaleColor(&diffuse, light_dot_normal);
+
+        // reflect_dot_eye represents the cosine of the angle between the
+        //  reflection vector and the eye vector. A negative number means the 
+        //  light reflects away from the eye.
+        Tuple4d reflectV;
+        vecmath_ScaleTuple4d(&lightV, -1.0);
+        ray_Reflect(&lightV, normal, &reflectV);
+        float reflect_dot_eye = vecmath_DotProductTuple4d(&reflectV, eyeV);
+        if (reflect_dot_eye > 0.0)
+        {
+            // Compute the specular contribution
+            float factor = pow(reflect_dot_eye, mat->shininess);
+            memcpy(&specular, &(light->intensity), sizeof(specular));
+            color_ScaleColor(&specular, mat->specular);
+            color_ScaleColor(&specular, factor);
+        }
+    }
+    // Add the three components together
+    color_AddColors(&ambient, &diffuse);
+    color_AddColors(&ambient, &specular);
+    memcpy(result, &ambient, sizeof(ambient));
 }

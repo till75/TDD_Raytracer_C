@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "vecmath.h"
 #include "transforms.h"
+#include "color.h"
 #include <stdio.h>
 
 void setUp(void)
@@ -71,7 +72,7 @@ void test_ray_IntersectSphereInTangent(void)
 
 void test_ray_IntersectSphereMisses(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};;
+    Object s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,2,-5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -82,7 +83,7 @@ void test_ray_IntersectSphereMisses(void)
 
 void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};;
+    Object s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,0,1}, {0,0,1,0}};
     Intersections intersections;
@@ -95,7 +96,7 @@ void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 
 void test_ray_IntersectSphereBehindRay(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};;
+    Object s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -108,7 +109,7 @@ void test_ray_IntersectSphereBehindRay(void)
 
 void test_ray_IntersectionSavesIntersectedObject(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};;
+    Object s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -370,5 +371,149 @@ void test_ray_CreateReflectionAtSlantedNormal(void)
     Tuple4d exp = {1,0,0,0};
 
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &r));
+}
+
+void test_ray_PointLightHasPositionAndIntensity(void)
+{
+    Color intensity = {1, 1, 1};
+    Tuple4d pos = {0,0,0,1};
+    PointLight pl;
+    ray_CreatePointLight(&pl, &pos, &intensity);
+    Tuple4d expP = {0,0,0,1};
+    Color expC = {1,1,1};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&expP, &(pl.pos)));
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expC, &(pl.intensity)));
+}
+
+void test_ray_CreateDefaultMaterial(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Color white = {1.0,1.0,1.0};
+
+    TEST_ASSERT_TRUE(color_AreEqualColors(&white, &(mat.color)));
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.1, mat.ambient);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.9, mat.diffuse);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.9, mat.specular);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 200, mat.shininess);
+}
+
+void test_ray_SphereHasDefaultMaterial(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Object sphere;
+    ray_CreateSphere(&sphere, &mat);
+    Material expM;
+    ray_CreateDefaultMaterial(&expM);
+
+    TEST_ASSERT_EQUAL_MEMORY(&expM, &(sphere.material), sizeof(expM));
+}
+
+void test_ray_SphereHasAssignedMaterial(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    mat.ambient = 1;
+    Object sphere;
+    ray_CreateSphere(&sphere, &mat);
+    Material expM;
+    ray_CreateDefaultMaterial(&expM);
+    expM.ambient = 1;
+
+    TEST_ASSERT_EQUAL_MEMORY(&expM, &(sphere.material), sizeof(expM));
+}
+
+void test_ray_Lighting_EyeBetweenLightAndSurface(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    Tuple4d eyeV = {0,0,-1,0};
+    Tuple4d n = {0,0,-1,0};
+    PointLight light;
+    Tuple4d lightPos = {0,0,-10, 1};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+    Color result;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+
+    Color expected = {1.9, 1.9, 1.9};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_Lighting_EyeBetweenLightAndSurface_EyeOffsetAt45Degrees(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    float tmp = sqrt(2)/2.0;
+    Tuple4d eyeV = {0, tmp, -tmp, 0};
+    Tuple4d n = {0,0,-1,0};
+    PointLight light;
+    Tuple4d lightPos = {0,0,-10, 1};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+    Color result;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+
+    Color expected = {1.0, 1.0, 1.0};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_Lighting_EyeOppositeSurface_LightAt45Degrees(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    Tuple4d eyeV = {0,0,-1,0};
+    Tuple4d n = {0,0,-1,0};
+    PointLight light;
+    Tuple4d lightPos = {0,10,-10, 1};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+    Color result;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+
+    Color expected = {0.7364, 0.7364, 0.7364};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_Lighting_EyeInPathOfReflectingVector(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    float tmp = sqrt(2)/2.0;
+    Tuple4d eyeV = {0, -tmp, -tmp, 0};
+    Tuple4d n = {0,0,-1,0};//{0,0,-1,0};
+    PointLight light;
+    Tuple4d lightPos = {0,10,-10, 1};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+    Color result;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+
+    Color expected = {1.6363853, 1.6363853, 1.6363853};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_Lighting_LightBehindSurface(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    Tuple4d eyeV = {0,0,-1,0};
+    Tuple4d n = {0,0,-1,0};
+    PointLight light;
+    Tuple4d lightPos = {0,0,10};
+    Color lightColor = {1, 1, 1};
+    ray_CreatePointLight(&light, &lightPos, &lightColor);
+    Color result;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+
+    Color expected = {0.1, 0.1, 0.1};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
 }
 #endif // TEST

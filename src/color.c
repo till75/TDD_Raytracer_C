@@ -1,4 +1,5 @@
 #include "color.h"
+#include "vecmath.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -53,4 +54,15 @@ void color_toPPM(Color* color, char* ppm)
         color_toInt8(color->green),
         color_toInt8(color->blue)
         );
+}
+
+bool color_AreEqualColors(Color* c1, Color* c2)
+{
+    return (
+        (fabsf(c1->red - c2->red) < EPSILON)
+        &&
+        (fabsf(c1->green - c2->green) < EPSILON)
+        &&
+        (fabsf(c1->blue - c2->blue) < EPSILON)
+    );
 }

@@ -2,6 +2,7 @@
     "ceedlingExplorer.debugConfiguration": "ceedling_gdb",
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "ray.h": "c"
+        "ray.h": "c",
+        "math.h": "c"
     }
 }

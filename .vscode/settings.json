@@ -1,5 +1,5 @@
 {
-    "ceedlingExplorer.debugConfiguration": "ceedling_gdb",
+    "ceedlingExplorer.debugConfiguration": "ceedling",
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "ray.h": "c",

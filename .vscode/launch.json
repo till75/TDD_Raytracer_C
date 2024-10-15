@@ -3,7 +3,7 @@
     "configurations": [
         {
             // Use the following for the Ceedling Explorer Debug Configuration
-            "name": "ceedling_gdb",
+            "name": "ceedling",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/test/out/${command:ceedlingExplorer.debugTestExecutable}",
@@ -25,4 +25,3 @@
         }
     ]
 }
-

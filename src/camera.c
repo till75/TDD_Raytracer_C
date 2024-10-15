@@ -12,7 +12,7 @@ void camera_Create(Camera* cam, Matrix4d* transform, int w, int h)
     
     Tuple4d o = {0,0,0,1};
     vecmath_MultiplyTuple4dByMatrix4d(&o, transform);
-    vecmath_CopyTuple4d(&o, cam->origin);
+    vecmath_CopyTuple4d(&o, &(cam->origin));
 
 ///////////////// TODO continue here...
 //    vecmath_MultiplyTuple4dByMatrix4d(&f, transform);

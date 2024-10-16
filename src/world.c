@@ -3,7 +3,7 @@
 #include <string.h>
 //#include "ray.h"
 //#include "vecmath.h"
-#include "transforms.h"
+//#include "transforms.h"
 
 
 void world_Create(World* w) 

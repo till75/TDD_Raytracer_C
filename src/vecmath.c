@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief Copies tuple t_from to t_to
+ */
+
 void vecmath_CopyTuple4d(Tuple4d* t_from, Tuple4d* t_to)
 {
     (*t_to)[0] = (*t_from)[0];

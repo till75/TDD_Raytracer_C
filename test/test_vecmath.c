@@ -1,6 +1,6 @@
 /**
  * @file
- * Tests for vecmath functions
+ * @brief Tests for vecmath functions
  * @author Till Seyfarth
  */
 
@@ -23,9 +23,12 @@ void tearDown(void)
  * @brief Initialize Tuple4d and check that accessing its members by indexing works.
  * 
  * @test Tuple4d t = {4.3, -4.2, 3.1, 1.0} is created. It's a point, because t[1] == 1.0.
- * Expecting that t[0] = 4.3, etc.
- * Expecting that vecmath_IsPointTuple4d(&t) is true
- * Expecting that vecmath_IsVectorTuple4d(&t) is false
+ * <ul>
+ *  <li> Expecting 
+ *  <li> t[0] = 4.3, etc.
+ *  <li> vecmath_IsPointTuple4d(&t) is true
+ *  <li> vecmath_IsVectorTuple4d(&t) is false
+ * </ul>
  */
 void test_vecmath_CreateTuple4d(void)
 {

@@ -27,6 +27,18 @@ void test_ray_CreateAndQuery(void)
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&(r.direction), &direction));
 }
 
+void test_ray_CreateMaterial()
+{
+    Color c = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &c, 0.1, 0.7, 0.2, 200.0);
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.1, mat.ambient);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.7, mat.diffuse);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.2, mat.specular);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 200, mat.shininess);
+}
+
 void test_ray_Position(void)
 {
 

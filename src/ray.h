@@ -65,5 +65,6 @@ void ray_Reflect(Tuple4d*, Tuple4d*, Tuple4d*);
 void ray_CreatePointLight(PointLight*, Tuple4d*, Color*);
 void ray_CreateDefaultMaterial(Material*);
 void ray_Lighting(Color*, Material*, PointLight*, Tuple4d*, Tuple4d*, Tuple4d*);
+void ray_CreateMaterial(Material*, Color*, float, float, float, float);
 
 #endif // RAY_H

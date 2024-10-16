@@ -29,6 +29,17 @@ void ray_CreateSphere(Object* obj, Material* mat)
     memcpy(&(obj->material), mat, sizeof(obj->material)); 
 }
 
+void ray_CreateMaterial(Material* mat, Color* col, float ambient, float diffuse, float specular, float shininess)
+{
+    mat->color.red = col->red;
+    mat->color.green = col->green;
+    mat->color.blue = col->blue;    
+    mat->ambient = ambient;
+    mat->diffuse = diffuse;
+    mat->specular = specular;
+    mat->shininess = shininess;
+}
+
 void ray_Position(Ray* r, Tuple4d* res, float t)
 {
     Tuple4d tmp;

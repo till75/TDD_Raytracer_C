@@ -8,7 +8,12 @@
 
 static float EPSILON = 0.00001f;
 
+/**
+ * 4 element array used for 3D vectors and points.
+ * @note First 3 elements correspond to x, y, z. Last element is 0 for vectors and 1 for points.
+ */
 typedef float Tuple4d[4];
+
 typedef float Matrix2d[2][2];
 typedef float Matrix3d[3][3];
 typedef float Matrix4d[4][4];

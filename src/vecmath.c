@@ -34,6 +34,14 @@ void vecmath_PrintMatrix4d(Matrix4d* m)
         printf( "| %8.5f | %8.5f | %8.5f | %8.5f |\n", (*m)[r][0], (*m)[r][1], (*m)[r][2], (*m)[r][3]); 
 }
 
+/*!
+ * @brief Checks if t is a point.
+ * 
+ * @param [in] t 
+ * @return TRUE if it's a point (t[3] == 1.0)
+ * @return FALSE otherwise
+ * @note Using #EPSILON
+ */
 bool vecmath_IsPointTuple4d(Tuple4d* t)
 {
     return(fabsf((*t)[3] - 1.0f) < EPSILON);

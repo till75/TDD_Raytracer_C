@@ -1,6 +1,9 @@
 # Folders
 build/
 
+# Images
+*.ppm
+
 # Prerequisites
 *.d
 

@@ -1,9 +1,18 @@
+/**
+ * @file
+ * @brief Tests for world functions.
+ * @author Till Seyfarth
+ */
 
 #ifdef TEST
 
 #include "unity.h"
 #include <string.h>
 #include "world.h"
+#include "ray.h"
+#include "transforms.h"
+#include "vecmath.h"
+#include "color.h"
 
 void setUp(void)
 {

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Tests for vecmath functions
+ * @brief Tests for vecmath functions.
  * @author Till Seyfarth
  */
 

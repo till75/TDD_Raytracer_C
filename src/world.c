@@ -8,7 +8,7 @@
 void world_Create(World* w) 
 {
     w->numberOfObjects = 0;
-    w->lightSource = NULL;
+    //*(w->lightSource) = (PointLight)NULL;
 }
 
 int world_getNumberOfObjects(World* w)
@@ -16,26 +16,63 @@ int world_getNumberOfObjects(World* w)
     return w->numberOfObjects;
 }
 
-void world_CreateDefault(World* w)
+void world_CreateDefault(World* w, Object* o1, Object* o2, PointLight* light)
 {
-    Object sphere1;
-    Color default_color = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    ray_CreateSphere(&sphere2, &mat);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    world_addObject(&sphere1);
-    world_addObject(&sphere2);
-
+    world_addObject(w, o1);
+    world_addObject(w, o2);
+    w->lightSource = *(light);
 }
 
-void world_addObject(Object* obj)
+void world_addObject(World* w, Object* obj)
 {
+    w->objects[w->numberOfObjects] = *(obj);
+    w->numberOfObjects += 1;
+}
 
+void world_IntersectRayWithWorld(World* world, Ray* ray, Intersections* ints)
+{
+    Object obj;
+    for (int obj_no = 0; obj_no < world->numberOfObjects; obj_no++)
+    {
+        obj = (world->objects)[obj_no];
+        switch (obj.type)
+        {
+            case SPHERE:
+            ray_IntersectSphere(ray, &obj, ints);
+            break;
+        }
+    }
+}
+
+void world_PrepareComputations(Comps* comps, Intersection* inter, Ray* ray)
+{
+    comps->t = inter->t;
+    comps->object = inter->object;
+
+    Tuple4d pt = {0,0,0,0};
+    ray_Position(ray, &pt, comps->t);
+    vecmath_CopyTuple4d(&pt, &(comps->point));
+
+    Tuple4d dir = {0,0,0,0};
+    vecmath_CopyTuple4d(&(ray->direction), &dir);
+    vecmath_ScaleTuple4d(&dir, -1.0);
+    vecmath_CopyTuple4d(&dir, &(comps->eyeV));
+
+    ray_NormalAt(&(comps->object), &(comps->point), &dir);
+    vecmath_CopyTuple4d(&dir, &(comps->normalV));
+
+    if (vecmath_DotProductTuple4d(&(comps->eyeV), &(comps->normalV)) < 0.0) 
+    {
+        comps->isHitFromInside = true;
+        vecmath_ScaleTuple4d(&(comps->normalV), -1.0);
+    }
+    else
+    {
+        comps->isHitFromInside = false;
+    }
+}
+
+void world_ShadeHit(World* world, Comps* comps, Color* resultColor)
+{
+    ray_Lighting(resultColor, &((comps->object).material), &(world->lightSource), &(comps->point), &(comps->eyeV), &(comps->normalV));
 }

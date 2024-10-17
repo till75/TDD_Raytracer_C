@@ -47,6 +47,14 @@ bool vecmath_IsPointTuple4d(Tuple4d* t)
     return(fabsf((*t)[3] - 1.0f) < EPSILON);
 }
 
+/*!
+ * @brief Checks if t is a vector.
+ * 
+ * @param [in] t 
+ * @return TRUE if it's a vector (t[3] == 0.0)
+ * @return FALSE otherwise
+ * @note Using #EPSILON
+ */
 bool vecmath_IsVectorTuple4d(Tuple4d* t)
 {
     return(fabsf((*t)[3]) < EPSILON);

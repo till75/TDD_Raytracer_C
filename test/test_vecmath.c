@@ -26,7 +26,7 @@ void tearDown(void)
  * @test bool vecmath_IsVectorTuple4d(Tuple4d* t)
  * 
  * @param [in] ::Tuple4d t = {4.3, -4.2, 3.1, 1.0} 
- * @note t is a point, because t[1] == 1.0.
+ * @note t is a point, because t[3] == 1.0.
  * @param [out] float t[0] = 4.3, etc.
  * @param [out] bool vecmath_IsPointTuple4d(Tuple4d* t) == TRUE
  * @param [out] bool vecmath_IsVectorTuple4d(Tuple4d* t) == FALSE

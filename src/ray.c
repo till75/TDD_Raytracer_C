@@ -4,6 +4,7 @@
 #include <math.h>
 #include <float.h>
 #include <string.h>
+#include "world.h"
 
 void ray_Create(Ray* r, Tuple4d* o, Tuple4d* d)
 {
@@ -52,7 +53,7 @@ void ray_Position(Ray* r, Tuple4d* res, float t)
 
 
 // TODO: Consider passing sorted intersections in and inserting hits to keep the array sorted!
-void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* i)
+void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
 {
     Matrix4d inverse_transform;
     vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
@@ -68,25 +69,26 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* i)
 
     if (discriminant < 0.0)
     {
-        i->count=0;
+        ints->count=0;
     }        
     else
     {
         float sqrt_disc = sqrt(discriminant);
         if (sqrt_disc < 0)
         {
-            i->intersections[0].t = (-b + sqrt_disc) / (2.0 * a);
-            i->intersections[1].t = (-b - sqrt_disc) / (2.0 * a);
+            ints->intersections[ints->count].t = (-b + sqrt_disc) / (2.0 * a);
+            ints->intersections[ints->count+1].t = (-b - sqrt_disc) / (2.0 * a);
         }
         else
         {
-            i->intersections[0].t = (-b - sqrt_disc) / (2.0 * a);
-            i->intersections[1].t = (-b + sqrt_disc) / (2.0 * a);
+            ints->intersections[ints->count].t = (-b - sqrt_disc) / (2.0 * a);
+            ints->intersections[ints->count+1].t = (-b + sqrt_disc) / (2.0 * a);
         }
-        i->count=2;
-        i->intersections[0].object = *obj;
-        i->intersections[1].object = *obj;
+        ints->intersections[ints->count].object = *obj;
+        ints->intersections[ints->count+1].object = *obj;
+        ints->count+=2;
     }
+    ray_BubbleSortIntersections(ints);
 }
 
 void ray_Hit(Intersections* ints, Intersection* res)
@@ -261,3 +263,4 @@ void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* poin
     color_AddColors(&ambient, &specular);
     memcpy(result, &ambient, sizeof(ambient));
 }
+

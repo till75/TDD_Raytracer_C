@@ -1,3 +1,12 @@
+/*!
+ * @file ray.h
+ * @author Till Seyfarth
+ * @brief 
+ * @date 2024-10-17
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #ifndef RAY_H
 #define RAY_H
 
@@ -29,10 +38,14 @@ typedef struct
     Material material;
 } Object;
 
+/*!
+ * @brief Intersection with object at distance t.
+ * 
+ */
 typedef struct
 {
-    float t;
-    Object object;
+    float t;        /**< Distance to intersection */
+    Object object;  /**< Intersected object */
 } Intersection;
 
 typedef struct
@@ -46,7 +59,6 @@ typedef struct
     Tuple4d pos;
     Color intensity;
 } PointLight;
-
 
 //void ray_CopyObject(Object*, Object*);
 void ray_Create(Ray*, Tuple4d*, Tuple4d*);

@@ -6,6 +6,7 @@
 #include "vecmath.h"
 #include "transforms.h"
 #include "color.h"
+#include "world.h"
 #include <stdio.h>
 
 void setUp(void)

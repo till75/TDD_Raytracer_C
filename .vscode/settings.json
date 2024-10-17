@@ -3,6 +3,7 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "ray.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "world.h": "c"
     }
 }

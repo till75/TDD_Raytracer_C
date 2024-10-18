@@ -69,7 +69,7 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
 
     if (discriminant < 0.0)
     {
-        //ints->count=0;
+        ints->count=0;
     }        
     else
     {
@@ -87,8 +87,8 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
         ints->intersections[ints->count].object = *obj;
         ints->intersections[ints->count+1].object = *obj;
         ints->count+=2;
+        ray_BubbleSortIntersections(ints);
     }
-    ray_BubbleSortIntersections(ints);
 }
 
 void ray_Hit(Intersections* ints, Intersection* res)

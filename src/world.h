@@ -40,4 +40,5 @@ void world_addObject(World*, Object*);
 void world_IntersectRayWithWorld(World*, Ray*, Intersections*);
 void world_PrepareComputations(Comps*, Intersection*, Ray*);
 void world_ShadeHit(World*, Comps*, Color*);
+void world_ColorAt(World*, Ray*, Color*);
 #endif // WORLD_H

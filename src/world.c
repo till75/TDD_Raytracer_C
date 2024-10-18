@@ -76,3 +76,24 @@ void world_ShadeHit(World* world, Comps* comps, Color* resultColor)
 {
     ray_Lighting(resultColor, &((comps->object).material), &(world->lightSource), &(comps->point), &(comps->eyeV), &(comps->normalV));
 }
+
+void world_ColorAt(World* world, Ray* ray, Color* resultColor)
+{
+    Intersections ints;
+    ints.count = 0;
+    world_IntersectRayWithWorld(world, ray, &ints);
+    Intersection closest;
+    ray_Hit(&ints, &closest);
+    Comps comps;
+    if (closest.object.type != OBJ_NONE)
+    {
+        world_PrepareComputations(&comps, &closest, ray);
+        world_ShadeHit(world, &comps, resultColor);
+    }
+    else
+    {
+        resultColor->red=0.0;
+        resultColor->green=0.0;
+        resultColor->blue=0.0;
+    }
+}

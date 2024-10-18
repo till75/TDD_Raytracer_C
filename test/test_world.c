@@ -226,4 +226,109 @@ void test_world_ShadeIntersectionFromInside(void)
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.blue, col.blue);    
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.green, col.green);    
 }
+
+void test_world_ColorAt_WhenRayMisses(void)
+{
+    // DEFAULT WORLD
+    Object sphere1;
+    Color color1 = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateSphere(&sphere1, &mat);
+
+    Object sphere2;
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
+    ray_CreateSphere(&sphere2, &mat2);
+    Matrix4d sphere_transform;
+    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
+    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
+
+    PointLight light = {{-10,10,-10,1},{1,1,1}};
+
+    World w;
+    world_Create(&w);
+    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+
+    // NEW TEST
+    Ray ray = {{0,0,-5,1},{0,1,0,0}};
+    Color c = {0,0,0};
+    world_ColorAt(&w, &ray, &c);
+
+    Color expected = {0,0,0};
+
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &c));
+
+}
+
+void test_world_ColorAt_WhenRayHitsOuterSphere(void)
+{
+    // DEFAULT WORLD
+    Object sphere1;
+    Color color1 = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateSphere(&sphere1, &mat);
+
+    Object sphere2;
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
+    ray_CreateSphere(&sphere2, &mat2);
+    Matrix4d sphere_transform;
+    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
+    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
+
+    PointLight light = {{-10,10,-10,1},{1,1,1}};
+
+    World w;
+    world_Create(&w);
+    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+
+    // NEW TEST
+    Ray ray = {{0,0,-5,1},{0,0,1,0}};
+    Color c = {0,0,0};
+    world_ColorAt(&w, &ray, &c);
+
+    Color expected = {0.38066,0.47583,0.2855};
+
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &c));
+
+}
+
+void test_world_ColorAt_WhenRayHitsInnerSphere(void)
+{
+    // DEFAULT WORLD + CHANGE IN AMBIENT (--> 1!)
+    Object sphere1;
+    Color color1 = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &color1, 1, 0.7, 0.2, 200.0);
+    ray_CreateSphere(&sphere1, &mat);
+
+    Object sphere2;
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 1, 0.9, 0.9, 200.0); // default material
+    ray_CreateSphere(&sphere2, &mat2);
+    Matrix4d sphere_transform;
+    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
+    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
+
+    PointLight light = {{-10,10,-10,1},{1,1,1}};
+
+    World w;
+    world_Create(&w);
+    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+
+    // NEW TEST
+    Ray ray = {{0,0,0.75,1},{0,0,-1,0}};
+    Color c = {0,0,0};
+    world_ColorAt(&w, &ray, &c);
+
+    Color expected = {1, 1, 1};
+
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &c));
+
+}
 #endif // TEST

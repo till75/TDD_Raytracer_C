@@ -63,6 +63,7 @@ void test_ray_IntersectSphereInTwoPoints(void)
 
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
@@ -76,6 +77,7 @@ void test_ray_IntersectSphereInTangent(void)
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,1,-5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
@@ -89,6 +91,7 @@ void test_ray_IntersectSphereMisses(void)
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,2,-5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(0, intersections.count);
@@ -100,6 +103,7 @@ void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,0,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
@@ -113,6 +117,7 @@ void test_ray_IntersectSphereBehindRay(void)
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
@@ -126,6 +131,7 @@ void test_ray_IntersectionSavesIntersectedObject(void)
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count=0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(SPHERE, intersections.intersections[0].object.type);

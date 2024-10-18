@@ -154,13 +154,16 @@ void test_world_PrecomputeIntersectionState_HitFromWithinObject(void)
 void test_world_ShadeIntersection(void)
 {
     Object sphere1;
-    Color default_color = {0.8, 1.0, 0.6};
+    Color color1 = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.0, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
     ray_CreateSphere(&sphere1, &mat);
 
     Object sphere2;
-    ray_CreateSphere(&sphere2, &mat);
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material!
+    ray_CreateSphere(&sphere2, &mat2);
     Matrix4d sphere_transform;
     transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
     vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
@@ -179,8 +182,48 @@ void test_world_ShadeIntersection(void)
     Color col;
     world_ShadeHit(&w, &comps, &col);
 
+    Color expected = {0.38066, 0.47583, 0.2855};
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.red, col.red);    
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.blue, col.blue);    
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.green, col.green);    
+}
+
+void test_world_ShadeIntersectionFromInside(void)
+{
+    Object sphere1;
+    Color color1 = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateSphere(&sphere1, &mat);
+
+    Object sphere2;
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
+    ray_CreateSphere(&sphere2, &mat2);
+    Matrix4d sphere_transform;
+    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
+    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
+
+    PointLight light = {{0,0.25,0,1},{1,1,1}};
+
+    World w;
+    world_Create(&w);
+    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+
+    Ray ray = {{0,0,0,1},{0,0,1,0}};
+    Object obj = w.objects[1];
+    Intersection inter = {0.5, obj};
+    Comps comps;
+    world_PrepareComputations(&comps, &inter, &ray);
+    Color col;
+    world_ShadeHit(&w, &comps, &col);
+
     Color expected = {0.90498, 0.90498, 0.90498};
 
-    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &col));
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.red, col.red);    
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.blue, col.blue);    
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, expected.green, col.green);    
 }
 #endif // TEST

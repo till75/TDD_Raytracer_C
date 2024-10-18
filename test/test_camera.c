@@ -60,7 +60,7 @@ void test_camera_Create(void)
     Camera cam; // = { cam_transform, {0,0,-5,1}, {0,0,1,0}, {0,1,0,0}, {1,0,0,0}, 2.5, 1.0, w, h, 0, 0};
     camera_Create(&cam, &cam_transform, w, h);
 
-    Ray ray = {{0,0,0,0},{0,0,0,0}}; // origin [3] should be 1
+    Ray ray = {{0,0,0,1},{0,0,0,0}}; // origin [3] should be 1
     
     Matrix4d sphere_transform;
     Material mat;
@@ -77,14 +77,15 @@ void test_camera_Create(void)
 
     Object nothing = {OBJ_NONE, UNITY_TRANSFORM};
     Intersection clostestHit = {0, nothing};
-    Intersections ints = {{clostestHit}, 1};
+    // Intersections ints = {{clostestHit}, 1};
+    Intersections ints = {{}, 0};
 
     int x = 0;
     int y = 0;
     do
     {
-        ints.count = 1;
-        ints.intersections[0] = clostestHit;
+        ints.count = 0;
+        clostestHit.object = nothing;
         camera_CastRay(&cam, &ray, x, y);
         ray_IntersectSphere(&ray, &sphere, &ints);
         ray_Hit(&ints, &clostestHit);

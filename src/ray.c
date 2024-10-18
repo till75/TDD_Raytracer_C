@@ -69,7 +69,7 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
 
     if (discriminant < 0.0)
     {
-        ints->count=0;
+        //ints->count=0;
     }        
     else
     {

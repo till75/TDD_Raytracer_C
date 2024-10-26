@@ -16,11 +16,29 @@ int world_getNumberOfObjects(World* w)
     return w->numberOfObjects;
 }
 
-void world_CreateDefault(World* w, Object* o1, Object* o2, PointLight* light)
+void world_CreateDefault(World* w)
 {
-    world_addObject(w, o1);
-    world_addObject(w, o2);
-    w->lightSource = *(light);
+    w->numberOfObjects = 0;
+    Object sphere1;
+    Color color1 = {0.8, 1.0, 0.6};
+    Material mat;
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateSphere(&sphere1, &mat);
+
+    Object sphere2;
+    Color color2 = {1, 1, 1};
+    Material mat2;
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material!
+    ray_CreateSphere(&sphere2, &mat2);
+    Matrix4d sphere_transform;
+    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
+    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
+
+    PointLight light = {{-10,10,-10,1},{1,1,1}};
+
+    world_addObject(w, &sphere1);
+    world_addObject(w, &sphere2);
+    w->lightSource = light;
 }
 
 void world_addObject(World* w, Object* obj)
@@ -96,4 +114,28 @@ void world_ColorAt(World* world, Ray* ray, Color* resultColor)
         resultColor->green=0.0;
         resultColor->blue=0.0;
     }
+}
+
+void world_CreateViewTransform(Matrix4d* res, Tuple4d* from, Tuple4d* to, Tuple4d* up)
+{
+    Tuple4d forward;
+    vecmath_CopyTuple4d(to, &forward);
+    vecmath_SubtractTuples4d(&forward, from);
+    vecmath_NormalizeTuple4d(&forward);
+    Tuple4d upn; 
+    vecmath_CopyTuple4d(up, &upn);
+    vecmath_NormalizeTuple4d(&upn);
+    Tuple4d left;
+    vecmath_CrossProductTuple4d(&left, &forward, &upn);
+    Tuple4d true_up;
+    vecmath_CrossProductTuple4d(&true_up, &left, &forward);
+    // Orientation matrix
+    (*res)[0][0] =     left[0]; (*res)[0][1] =     left[1]; (*res)[0][2] =     left[2]; (*res)[0][3] = 0;
+    (*res)[1][0] =  true_up[0]; (*res)[1][1] =  true_up[1]; (*res)[1][2] =  true_up[2]; (*res)[1][3] = 0;
+    (*res)[2][0] = -forward[0]; (*res)[2][1] = -forward[1]; (*res)[2][2] = -forward[2]; (*res)[2][3] = 0;
+    (*res)[3][0] =           0; (*res)[3][1] =           0; (*res)[3][2] =           0; (*res)[3][3] = 1;
+
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, -(*from)[0], -(*from)[1], -(*from)[2]);
+    vecmath_MultiplyMatrix4d(res, &transl);
 }

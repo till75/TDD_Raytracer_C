@@ -38,46 +38,16 @@ void test_world_EmptyOnCreation(void)
 
 void test_world_CreateDefault(void)
 {
-    Object sphere1;
-    Color default_color = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    ray_CreateSphere(&sphere2, &mat);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light;
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
 
     TEST_ASSERT_EQUAL(2, w.numberOfObjects);
 }
 
 void test_world_DefaultWorldIntersectsFourTimesWithZAxisRay(void)
 {
-    Object sphere1;
-    Color default_color = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    ray_CreateSphere(&sphere2, &mat);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light;
-    
     World world;
-    world_Create(&world);
-    world_CreateDefault(&world, &sphere1, &sphere2, &light);
+    world_CreateDefault(&world);
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
     Intersections ints;
     ints.count = 0;
@@ -153,26 +123,8 @@ void test_world_PrecomputeIntersectionState_HitFromWithinObject(void)
 
 void test_world_ShadeIntersection(void)
 {
-    Object sphere1;
-    Color color1 = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    Color color2 = {1, 1, 1};
-    Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material!
-    ray_CreateSphere(&sphere2, &mat2);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light = {{-10,10,-10,1},{1,1,1}};
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
 
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
     Object obj = w.objects[0];
@@ -191,26 +143,10 @@ void test_world_ShadeIntersection(void)
 
 void test_world_ShadeIntersectionFromInside(void)
 {
-    Object sphere1;
-    Color color1 = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    Color color2 = {1, 1, 1};
-    Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
-    ray_CreateSphere(&sphere2, &mat2);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light = {{0,0.25,0,1},{1,1,1}};
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
+    PointLight light = {{0,0.25,0,1},{1,1,1}};
+    w.lightSource = light;
 
     Ray ray = {{0,0,0,1},{0,0,1,0}};
     Object obj = w.objects[1];
@@ -229,29 +165,9 @@ void test_world_ShadeIntersectionFromInside(void)
 
 void test_world_ColorAt_WhenRayMisses(void)
 {
-    // DEFAULT WORLD
-    Object sphere1;
-    Color color1 = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    Color color2 = {1, 1, 1};
-    Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
-    ray_CreateSphere(&sphere2, &mat2);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light = {{-10,10,-10,1},{1,1,1}};
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
 
-    // NEW TEST
     Ray ray = {{0,0,-5,1},{0,1,0,0}};
     Color c = {0,0,0};
     world_ColorAt(&w, &ray, &c);
@@ -264,29 +180,9 @@ void test_world_ColorAt_WhenRayMisses(void)
 
 void test_world_ColorAt_WhenRayHitsOuterSphere(void)
 {
-    // DEFAULT WORLD
-    Object sphere1;
-    Color color1 = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    Color color2 = {1, 1, 1};
-    Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material
-    ray_CreateSphere(&sphere2, &mat2);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light = {{-10,10,-10,1},{1,1,1}};
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
 
-    // NEW TEST
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
     Color c = {0,0,0};
     world_ColorAt(&w, &ray, &c);
@@ -300,35 +196,78 @@ void test_world_ColorAt_WhenRayHitsOuterSphere(void)
 void test_world_ColorAt_WhenRayHitsInnerSphere(void)
 {
     // DEFAULT WORLD + CHANGE IN AMBIENT (--> 1!)
-    Object sphere1;
-    Color color1 = {0.8, 1.0, 0.6};
-    Material mat;
-    ray_CreateMaterial(&mat, &color1, 1, 0.7, 0.2, 200.0);
-    ray_CreateSphere(&sphere1, &mat);
-
-    Object sphere2;
-    Color color2 = {1, 1, 1};
-    Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 1, 0.9, 0.9, 200.0); // default material
-    ray_CreateSphere(&sphere2, &mat2);
-    Matrix4d sphere_transform;
-    transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 
-    vecmath_CopyMatrix4d(&sphere_transform, &(sphere2.transform));
-
-    PointLight light = {{-10,10,-10,1},{1,1,1}};
-
     World w;
-    world_Create(&w);
-    world_CreateDefault(&w, &sphere1, &sphere2, &light);
+    world_CreateDefault(&w);
+    w.objects[0].material.ambient = 1.0;
+    w.objects[1].material.ambient = 1.0;
 
     // NEW TEST
     Ray ray = {{0,0,0.75,1},{0,0,-1,0}};
     Color c = {0,0,0};
     world_ColorAt(&w, &ray, &c);
 
-    Color expected = {1, 1, 1};
+    Color expected = w.objects[1].material.color;
 
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &c));
 
+}
+
+void test_world_CreateViewTransform_DefaultOrientation(void)
+{
+    Tuple4d from = {0,0,0,1};
+    Tuple4d to = {0,0,-1,1};
+    Tuple4d up = {0,1,0,0};
+    Matrix4d viewTrans;
+    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+
+    Matrix4d expected = UNITY_TRANSFORM;
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+}
+
+void test_world_CreateViewTransform_InvertedOrientation(void)
+{
+    Tuple4d from = {0,0,0,1};
+    Tuple4d to = {0,0,1,1};
+    Tuple4d up = {0,1,0,0};
+    Matrix4d viewTrans;
+    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+
+    Matrix4d expected;
+    transforms_GetScalingMatrix4d(&expected, -1, 1, -1);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+}
+
+void test_world_CreateViewTransform_MovesTheWorld(void)
+{
+    Tuple4d from = {0,0,8,1};
+    Tuple4d to = {0,0,0,1};
+    Tuple4d up = {0,1,0,0};
+    Matrix4d viewTrans;
+    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+
+    Matrix4d expected;
+    transforms_GetTranslationMatrix4d(&expected, 0, 0, -8);
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+}
+
+void test_world_CreateViewTransform_Arbitrary(void)
+{
+    Tuple4d from = {1,3,2,1};
+    Tuple4d to = {4,-2,8,1};
+    Tuple4d up = {1,1,0,0};
+    Matrix4d viewTrans;
+    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+
+    Matrix4d expected = {
+        {-0.50709, 0.50709,  0.67612, -2.36643},
+        { 0.76772, 0.60609,  0.12122, -2.82843},
+        {-0.35857, 0.59761, -0.71714,  0.00000},
+        { 0.00000, 0.00000,  0.00000,  1.00000}
+    };
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
 }
 #endif // TEST

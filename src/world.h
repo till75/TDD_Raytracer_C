@@ -35,10 +35,11 @@ typedef struct
 
 void world_Create(World*);
 int world_getNumberOfObjects(World*);
-void world_CreateDefault(World*, Object*, Object*, PointLight*);
+void world_CreateDefault(World*); //, Object*, Object*, PointLight*);
 void world_addObject(World*, Object*);
 void world_IntersectRayWithWorld(World*, Ray*, Intersections*);
 void world_PrepareComputations(Comps*, Intersection*, Ray*);
 void world_ShadeHit(World*, Comps*, Color*);
 void world_ColorAt(World*, Ray*, Color*);
+void world_CreateViewTransform(Matrix4d*, Tuple4d*, Tuple4d*, Tuple4d*);
 #endif // WORLD_H

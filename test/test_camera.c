@@ -19,6 +19,90 @@ void tearDown(void)
 {
 }
 
+void test_camera_Create2(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 160, 120, M_PI/2.0);
+
+    Matrix4d expected = UNITY_TRANSFORM;
+    TEST_ASSERT_EQUAL(160, cam.hsize);
+    TEST_ASSERT_EQUAL(120, cam.vsize);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, M_PI/2.0, cam.fov);
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &(cam.transform))); 
+
+}
+
+void test_camera_PixelSizeHorizontalCanvas(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 200, 125, M_PI/2.0);
+    camera_InitPixelSize(&cam);
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.01, cam.pixel_size);
+}
+
+void test_camera_PixelSizeVerticalCanvas(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 125, 200, M_PI/2.0);
+    camera_InitPixelSize(&cam);
+
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.01, cam.pixel_size);
+}
+
+void test_camera_RayThroughCanvasCenter(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 201, 101, M_PI/2.0);
+    camera_InitPixelSize(&cam);
+    Ray ray;
+    camera_RayForPixel(&cam, &ray, 100, 50);
+
+    Tuple4d exp_origin = {0,0,0,1};
+    Tuple4d exp_direction = {0,0,-1,0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_origin, &(ray.origin)));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_direction, &(ray.direction)));
+}
+
+void test_camera_RayThroughCanvasCorner(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 201, 101, M_PI/2.0);
+    camera_InitPixelSize(&cam);
+    Ray ray;
+    camera_RayForPixel(&cam, &ray, 0, 0);
+
+    Tuple4d exp_origin = {0,0,0,1};
+    Tuple4d exp_direction = {0.66519, 0.33259, -0.66851};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_origin, &(ray.origin)));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_direction, &(ray.direction)));
+}
+
+void test_camera_RayOfTransformedCamera(void)
+{
+    Camera2 cam;
+    camera_Create2(&cam, 201, 101, M_PI/2.0);
+    camera_InitPixelSize(&cam);
+
+    Matrix4d rotY;
+    transforms_GetRotationYMatrix4d(&rotY, M_PI/4.0);
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, 0, -2, 5);
+    vecmath_MultiplyMatrix4d(&rotY, &transl);
+    vecmath_CopyMatrix4d(&rotY, &(cam.transform));
+
+    Ray ray;
+    camera_RayForPixel(&cam, &ray, 100, 50);
+
+    Tuple4d exp_origin = {0,2,-5,1};
+    Tuple4d exp_direction = {sqrt(2.0)/2, 0, -sqrt(2)/2.0, 0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_origin, &(ray.origin)));
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp_direction, &(ray.direction)));
+}
+
 void test_camera_Create(void)
 {
     int w = 640;
@@ -60,7 +144,7 @@ void test_camera_Create(void)
     Camera cam; // = { cam_transform, {0,0,-5,1}, {0,0,1,0}, {0,1,0,0}, {1,0,0,0}, 2.5, 1.0, w, h, 0, 0};
     camera_Create(&cam, &cam_transform, w, h);
 
-    Ray ray = {{0,0,0,1},{0,0,0,0}}; // origin [3] should be 1
+    Ray ray = {{0,0,0,1},{0,0,0,0}}; 
     
     Matrix4d sphere_transform;
     Material mat;

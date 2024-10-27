@@ -1,4 +1,5 @@
 #include "camera.h"
+#include <math.h>
 
 static Tuple4d eye;
 
@@ -28,6 +29,52 @@ void camera_Create(Camera* cam, Matrix4d* transform, int w, int h)
     vecmath_CopyTuple4d(&(cam->origin), &eye);
     vecmath_AddTuples4d(&eye, &back);
 
+}
+
+void camera_Create2(Camera2* camera, int hsize, int vsize, float fov)
+{
+    camera->hsize = hsize;
+    camera->vsize = vsize;
+    camera->fov = fov;
+    Matrix4d trans = UNITY_TRANSFORM;
+    vecmath_CopyMatrix4d(&trans, &(camera->transform));
+}
+
+void camera_InitPixelSize(Camera2* camera)
+{
+    float half_view = tan(camera->fov/2.0);
+    float aspect_ratio = (float)camera->hsize / (float)camera->vsize;
+    if (aspect_ratio >= 1.0)
+    {
+        camera->half_width = half_view;
+        camera->half_height = half_view / aspect_ratio;
+    }
+    else
+    {
+        camera->half_width = half_view * aspect_ratio;
+        camera->half_height = half_view;
+    }
+    camera->pixel_size = (camera->half_width * 2.0) / camera->hsize;
+}
+
+void camera_RayForPixel(Camera2* camera, Ray* ray, int x, int y)
+{
+    float x_offset = ((float)x + 0.5) * camera->pixel_size;
+    float y_offset = ((float)y + 0.5) * camera->pixel_size;
+
+    float world_x = camera->half_width - x_offset;
+    float world_y = camera->half_height - y_offset;
+    
+    Matrix4d inv;
+    vecmath_FastInverseMatrix4d(&(camera->transform), &inv);
+    Tuple4d pixel = {world_x, world_y, -1, 1};
+    vecmath_MultiplyTuple4dByMatrix4d(&pixel, &inv);
+    Tuple4d origin = {0,0,0,1};
+    vecmath_MultiplyTuple4dByMatrix4d(&origin, &inv);
+    vecmath_CopyTuple4d(&origin, &(ray->origin));
+    vecmath_SubtractTuples4d(&pixel, &origin);
+    vecmath_NormalizeTuple4d(&pixel);
+    vecmath_CopyTuple4d(&pixel, &(ray->direction));
 }
 
 void camera_CastRay(Camera* cam, Ray* ray, int x, int y)

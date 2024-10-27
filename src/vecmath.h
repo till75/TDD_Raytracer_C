@@ -47,9 +47,9 @@ float vecmath_DeterminantMatrix3d(Matrix3d*);
 float vecmath_CofactorMatrix4d(Matrix4d*, int, int);
 float vecmath_DeterminantMatrix4d(Matrix4d*);
 bool vecmath_IsInvertibleMatrix4d(Matrix4d*);
-void vecmath_InverseMatrix4d(Matrix4d*, Matrix4d*);
-void vecmath_FastInverseMatrix4d(Matrix4d*, Matrix4d*);
+void vecmath_InverseMatrix4d(Matrix4d* m, Matrix4d* res);
+void vecmath_FastInverseMatrix4d(Matrix4d* m, Matrix4d* res);
 void vecmath_ScaleMatrix4d(Matrix4d*, float);
 void vecmath_CopyTuple4d(Tuple4d* t_from, Tuple4d* t_to);
-void vecmath_CopyMatrix4d(Matrix4d*, Matrix4d*);
+void vecmath_CopyMatrix4d(Matrix4d* m_from, Matrix4d* m_to);
 #endif // VECMATH_H

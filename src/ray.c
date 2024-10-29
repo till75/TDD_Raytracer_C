@@ -4,7 +4,7 @@
 #include <math.h>
 #include <float.h>
 #include <string.h>
-#include "world.h"
+//#include "world.h"
 
 void ray_Create(Ray* r, Tuple4d* o, Tuple4d* d)
 {
@@ -67,11 +67,7 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
 
     float discriminant = b*b - 4.0 * a * c;
 
-    if (discriminant < 0.0)
-    {
-        ints->count=0;
-    }        
-    else
+    if (discriminant > 0.0)
     {
         float sqrt_disc = sqrt(discriminant);
         if (sqrt_disc < 0)
@@ -93,18 +89,26 @@ void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
 
 void ray_Hit(Intersections* ints, Intersection* res)
 {
-    int i = 0;
+//    int i = 0;
     int i_closest = -1;
     float t_closest = FLT_MAX;
-    do 
+    for (int i = 0; i < ints->count; i++)
     {
         if (ints->intersections[i].t > 0 && ints->intersections[i].t < t_closest)
         {
             i_closest = i;
             t_closest = ints->intersections[i].t;
         }
-        i++;
-    } while (i < ints->count);
+    }
+    // do 
+    // {
+    //     if (ints->intersections[i].t > 0 && ints->intersections[i].t < t_closest)
+    //     {
+    //         i_closest = i;
+    //         t_closest = ints->intersections[i].t;
+    //     }
+    //     i++;
+    // } while (i < ints->count);
     if (i_closest >= 0)
     {
         res->object = ints->intersections[i_closest].object;
@@ -211,7 +215,7 @@ void ray_CreateDefaultMaterial(Material* m)
     m->shininess = 200.0;
 }
 
-void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* point, Tuple4d* eyeV, Tuple4d* normal)
+void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* point, Tuple4d* eyeV, Tuple4d* normal, bool in_shadow)
 {
     // Combine the surface color with the light's color/intensity
     Color effective_color;
@@ -229,38 +233,41 @@ void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* poin
     memcpy(&ambient, &effective_color, sizeof(ambient));
     color_ScaleColor(&ambient, mat->ambient);
 
-    // light_dot_normal represents the cosine of the angle between the
-    //  light vector and the normal vector. A negative number means the
-    //  light is on the other side of the surface.
-    Color diffuse = {0,0,0};
-    Color specular = {0,0,0};
-    float light_dot_normal = vecmath_DotProductTuple4d(&lightV, normal);
-    if (light_dot_normal >= 0.0) 
+    if (!in_shadow)
     {
-        // Compute the diffuse contribution
-        memcpy(&diffuse, &effective_color, sizeof(diffuse));
-        color_ScaleColor(&diffuse, mat->diffuse);
-        color_ScaleColor(&diffuse, light_dot_normal);
-
-        // reflect_dot_eye represents the cosine of the angle between the
-        //  reflection vector and the eye vector. A negative number means the 
-        //  light reflects away from the eye.
-        Tuple4d reflectV;
-        vecmath_ScaleTuple4d(&lightV, -1.0);
-        ray_Reflect(&lightV, normal, &reflectV);
-        float reflect_dot_eye = vecmath_DotProductTuple4d(&reflectV, eyeV);
-        if (reflect_dot_eye > 0.0)
+        // light_dot_normal represents the cosine of the angle between the
+        //  light vector and the normal vector. A negative number means the
+        //  light is on the other side of the surface.
+        Color diffuse = {0,0,0};
+        Color specular = {0,0,0};
+        float light_dot_normal = vecmath_DotProductTuple4d(&lightV, normal);
+        if (light_dot_normal >= 0.0) 
         {
-            // Compute the specular contribution
-            float factor = pow(reflect_dot_eye, mat->shininess);
-            memcpy(&specular, &(light->intensity), sizeof(specular));
-            color_ScaleColor(&specular, mat->specular);
-            color_ScaleColor(&specular, factor);
+            // Compute the diffuse contribution
+            memcpy(&diffuse, &effective_color, sizeof(diffuse));
+            color_ScaleColor(&diffuse, mat->diffuse);
+            color_ScaleColor(&diffuse, light_dot_normal);
+
+            // reflect_dot_eye represents the cosine of the angle between the
+            //  reflection vector and the eye vector. A negative number means the 
+            //  light reflects away from the eye.
+            Tuple4d reflectV;
+            vecmath_ScaleTuple4d(&lightV, -1.0);
+            ray_Reflect(&lightV, normal, &reflectV);
+            float reflect_dot_eye = vecmath_DotProductTuple4d(&reflectV, eyeV);
+            if (reflect_dot_eye > 0.0)
+            {
+                // Compute the specular contribution
+                float factor = pow(reflect_dot_eye, mat->shininess);
+                memcpy(&specular, &(light->intensity), sizeof(specular));
+                color_ScaleColor(&specular, mat->specular);
+                color_ScaleColor(&specular, factor);
+            }
         }
+        // Add the three components together
+        color_AddColors(&ambient, &diffuse);
+        color_AddColors(&ambient, &specular);
     }
-    // Add the three components together
-    color_AddColors(&ambient, &diffuse);
-    color_AddColors(&ambient, &specular);
     memcpy(result, &ambient, sizeof(ambient));
 }
 

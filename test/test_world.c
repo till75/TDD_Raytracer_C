@@ -18,7 +18,8 @@
 #include "vecmath.h"
 #include "transforms.h"
 #include "color.h"
-// #include "camera.h"
+#include "camera.h"
+#include "canvas.h"
 
 void setUp(void)
 {
@@ -214,52 +215,52 @@ void test_world_ColorAt_WhenRayHitsInnerSphere(void)
 
 void test_world_CreateViewTransform_DefaultOrientation(void)
 {
+    Camera2 cam;
     Tuple4d from = {0,0,0,1};
     Tuple4d to = {0,0,-1,1};
     Tuple4d up = {0,1,0,0};
-    Matrix4d viewTrans;
-    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+    camera_SetViewTransform(&cam, &from, &to, &up);
 
     Matrix4d expected = UNITY_TRANSFORM;
 
-    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &(cam.transform)));
 }
 
 void test_world_CreateViewTransform_InvertedOrientation(void)
 {
+    Camera2 cam;
     Tuple4d from = {0,0,0,1};
     Tuple4d to = {0,0,1,1};
     Tuple4d up = {0,1,0,0};
-    Matrix4d viewTrans;
-    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+    camera_SetViewTransform(&cam, &from, &to, &up);
 
     Matrix4d expected;
     transforms_GetScalingMatrix4d(&expected, -1, 1, -1);
 
-    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &(cam.transform)));
 }
 
 void test_world_CreateViewTransform_MovesTheWorld(void)
 {
+    Camera2 cam;
     Tuple4d from = {0,0,8,1};
     Tuple4d to = {0,0,0,1};
     Tuple4d up = {0,1,0,0};
-    Matrix4d viewTrans;
-    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+    camera_SetViewTransform(&cam, &from, &to, &up);
 
     Matrix4d expected;
     transforms_GetTranslationMatrix4d(&expected, 0, 0, -8);
 
-    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &(cam.transform)));
 }
 
 void test_world_CreateViewTransform_Arbitrary(void)
 {
+    Camera2 cam;
     Tuple4d from = {1,3,2,1};
     Tuple4d to = {4,-2,8,1};
     Tuple4d up = {1,1,0,0};
-    Matrix4d viewTrans;
-    world_CreateViewTransform(&viewTrans, &from, &to, &up);
+    camera_SetViewTransform(&cam, &from, &to, &up);
 
     Matrix4d expected = {
         {-0.50709, 0.50709,  0.67612, -2.36643},
@@ -268,6 +269,42 @@ void test_world_CreateViewTransform_Arbitrary(void)
         { 0.00000, 0.00000,  0.00000,  1.00000}
     };
 
-    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &viewTrans));
+    TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&expected, &(cam.transform)));
+}
+
+void test_world_Is_Shadowed_PointNotShadowed(void)
+{
+    World w;
+    world_CreateDefault(&w);
+    Tuple4d p = {0,10,0,1};
+
+    TEST_ASSERT_FALSE(world_Is_Shadowed(&w, &p));
+}
+
+void test_world_Is_Shadowed_PointShadowedBySphere(void)
+{
+    World w;
+    world_CreateDefault(&w);
+    Tuple4d p = {10,-10,10,1};
+
+    TEST_ASSERT_TRUE(world_Is_Shadowed(&w, &p));
+}
+
+void test_world_Is_Shadowed_PointBehindLight(void)
+{
+    World w;
+    world_CreateDefault(&w);
+    Tuple4d p = {-20,20,-20,1};
+
+    TEST_ASSERT_FALSE(world_Is_Shadowed(&w, &p));
+}
+
+void test_world_Is_Shadowed_PointBetweenLightAndSphere(void)
+{
+    World w;
+    world_CreateDefault(&w);
+    Tuple4d p = {-2,2,-2,1};
+
+    TEST_ASSERT_FALSE(world_Is_Shadowed(&w, &p));
 }
 #endif // TEST

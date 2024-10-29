@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "world.h"
 #include "color.h"
 #include <stdlib.h>
 #include <stdio.h>

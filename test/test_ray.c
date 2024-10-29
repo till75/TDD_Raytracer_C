@@ -7,6 +7,8 @@
 #include "transforms.h"
 #include "color.h"
 #include "world.h"
+#include "camera.h"
+#include "canvas.h"
 #include <stdio.h>
 
 void setUp(void)
@@ -358,6 +360,9 @@ void test_ray_CreateNormalOnScaledSphere(void)
     Object sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d scale;
     transforms_GetScalingMatrix4d(&scale, 1, 0.5, 1);
+    Matrix4d rotZ;
+    transforms_GetRotationZMatrix4d(&rotZ, M_PI/5.0);
+    vecmath_MultiplyMatrix4d(&scale, &rotZ);
     vecmath_CopyMatrix4d(&scale, &(sphere.transform));
 
     float tmp = sqrt(2.0)/2.0;
@@ -367,6 +372,22 @@ void test_ray_CreateNormalOnScaledSphere(void)
     Tuple4d exp = {0, 0.97014, -0.24254, 0};
 
     TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));
+}
+
+void test_ray_CreateNormalOnScaledAndTranslatedSphere(void)
+{
+    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Matrix4d rotY;
+    transforms_GetRotationYMatrix4d(&rotY, M_PI/4.0);
+    vecmath_CopyMatrix4d(&rotY, &(sphere.transform));
+
+    float tmp = sqrt(3.0)/3.0;
+    Tuple4d p = {tmp, tmp, tmp, 1};
+    Tuple4d n = {0,0,0,0};
+    ray_NormalAt(&sphere, &p, &n);
+    Tuple4d exp = {tmp, tmp, tmp, 0};
+
+    TEST_ASSERT_TRUE(vecmath_AreEqualTuples4d(&exp, &n));   
 }
 
 void test_ray_CreateReflectionAtNormal(void)
@@ -456,9 +477,25 @@ void test_ray_Lighting_EyeBetweenLightAndSurface(void)
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;
-    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, false);
 
     Color expected = {1.9, 1.9, 1.9};
+    TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_Lighting_WithSurfaceInShadow(void)
+{
+    Material mat;
+    ray_CreateDefaultMaterial(&mat);
+    Tuple4d pos = {0,0,0,1};
+    Tuple4d eyeV = {0,0,-1,0};
+    Tuple4d n = {0,0,-1,0};
+    PointLight light = {{0,0,-10, 1}, {1, 1, 1}};
+    Color result;
+    bool in_shadow = true;
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, in_shadow);
+
+    Color expected = {0.1, 0.1, 0.1};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
 }
 
@@ -475,7 +512,7 @@ void test_ray_Lighting_EyeBetweenLightAndSurface_EyeOffsetAt45Degrees(void)
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;
-    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, false);
 
     Color expected = {1.0, 1.0, 1.0};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
@@ -493,7 +530,7 @@ void test_ray_Lighting_EyeOppositeSurface_LightAt45Degrees(void)
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;
-    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, false);
 
     Color expected = {0.7364, 0.7364, 0.7364};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
@@ -512,7 +549,7 @@ void test_ray_Lighting_EyeInPathOfReflectingVector(void)
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;
-    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, false);
 
     Color expected = {1.6363853, 1.6363853, 1.6363853};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
@@ -530,9 +567,10 @@ void test_ray_Lighting_LightBehindSurface(void)
     Color lightColor = {1, 1, 1};
     ray_CreatePointLight(&light, &lightPos, &lightColor);
     Color result;
-    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n);
+    ray_Lighting(&result, &mat, &light, &pos, &eyeV, &n, false);
 
     Color expected = {0.1, 0.1, 0.1};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
 }
+
 #endif // TEST

@@ -3,6 +3,10 @@
 #include "canvas.h"
 #include "color.h"
 #include "vecmath.h"
+#include "transforms.h"
+#include "world.h"
+#include "camera.h"
+#include "ray.h"
 
 void setUp(void)
 {

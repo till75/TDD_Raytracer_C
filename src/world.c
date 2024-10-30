@@ -19,13 +19,13 @@ int world_getNumberOfObjects(World* w)
 void world_CreateDefault(World* w)
 {
     w->numberOfObjects = 0;
-    Object sphere1;
+    Shape sphere1;
     Color color1 = {0.8, 1.0, 0.6};
     Material mat;
     ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
     ray_CreateSphere(&sphere1, &mat);
 
-    Object sphere2;
+    Shape sphere2;
     Color color2 = {1, 1, 1};
     Material mat2;
     ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material!
@@ -41,7 +41,7 @@ void world_CreateDefault(World* w)
     w->lightSource = light;
 }
 
-void world_addObject(World* w, Object* obj)
+void world_addObject(World* w, Shape* obj)
 {
     w->objects[w->numberOfObjects] = *(obj);
     w->numberOfObjects += 1;
@@ -49,7 +49,7 @@ void world_addObject(World* w, Object* obj)
 
 void world_IntersectRayWithWorld(World* world, Ray* ray, Intersections* ints)
 {
-    Object obj;
+    Shape obj;
     for (int obj_no = 0; obj_no < world->numberOfObjects; obj_no++)
     {
         obj = (world->objects)[obj_no];

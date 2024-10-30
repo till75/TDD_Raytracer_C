@@ -139,7 +139,7 @@ void test_camera_RayOfTransformedCamera(void)
 void test_camera_RenderWorldWith6Spheres(void)
 {
     // Sphere 1 - floor
-    Object floor;
+    Shape floor;
 
     Color floor_color = {1.0, 0.9, 0.9};
     Material floor_mat;
@@ -151,7 +151,7 @@ void test_camera_RenderWorldWith6Spheres(void)
     vecmath_CopyMatrix4d(&scale, &(floor.transform));    
 
     // Sphere 2 - left wall
-    Object left_wall;
+    Shape left_wall;
     ray_CreateSphere(&left_wall, &floor_mat);
 
     Matrix4d rotY;
@@ -168,7 +168,7 @@ void test_camera_RenderWorldWith6Spheres(void)
     vecmath_CopyMatrix4d(&transform, &(left_wall.transform));
 
     // Sphere 3 - right wall
-    Object right_wall;
+    Shape right_wall;
     ray_CreateSphere(&right_wall, &floor_mat);
 
     transforms_GetRotationYMatrix4d(&rotY, M_PI/4.0);
@@ -179,7 +179,7 @@ void test_camera_RenderWorldWith6Spheres(void)
 
     vecmath_CopyMatrix4d(&transform, &(right_wall.transform));
     // Sphere 4 - large middle
-    Object middle_sphere;
+    Shape middle_sphere;
 
     Color ms_color = {0.1, 1, 0.5};
     Material ms_mat;
@@ -190,7 +190,7 @@ void test_camera_RenderWorldWith6Spheres(void)
     vecmath_CopyMatrix4d(&transl, &(middle_sphere.transform));
 
     // Sphere 5 - right
-    Object right_sphere;
+    Shape right_sphere;
 
     Color rs_color = {0.5, 1, 0.1};
     Material rs_mat;
@@ -204,7 +204,7 @@ void test_camera_RenderWorldWith6Spheres(void)
     vecmath_CopyMatrix4d(&transform, &(right_sphere.transform));
 
     // Sphere 6 - left
-    Object left_sphere;
+    Shape left_sphere;
 
     Color ls_color = {1, 0.8, 0.1};
     Material ls_mat;
@@ -294,7 +294,7 @@ void test_camera_RenderWorldWith6Spheres(void)
 //     Matrix4d sphere_transform;
 //     Material mat;
 //     ray_CreateDefaultMaterial(&mat);
-//     Object sphere;
+//     Shape sphere;
 //     ray_CreateSphere(&sphere, &mat);
 //     transforms_GetScalingMatrix4d(&sphere_transform, 1,1,1); 
 //     vecmath_CopyMatrix4d(&sphere_transform, &(sphere.transform));
@@ -304,7 +304,7 @@ void test_camera_RenderWorldWith6Spheres(void)
 //     Color lightColor = {1, 1, 1};
 //     ray_CreatePointLight(&light, &lightPos, &lightColor);
 
-//     Object nothing = {OBJ_NONE, UNITY_TRANSFORM};
+//     Shape nothing = {OBJ_NONE, UNITY_TRANSFORM};
 //     Intersection clostestHit = {0, nothing};
 //     // Intersections ints = {{clostestHit}, 1};
 //     Intersections ints = {{}, 0};

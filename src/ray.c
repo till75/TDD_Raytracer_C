@@ -22,7 +22,7 @@ void ray_GetDirectionCopy(Ray* r, Tuple4d* d)
     vecmath_CopyTuple4d(&(r->direction), d);
 }
 
-void ray_CreateSphere(Object* obj, Material* mat)
+void ray_CreateSphere(Shape* obj, Material* mat)
 {
     obj->type=SPHERE;
     Matrix4d tr = UNITY_TRANSFORM;
@@ -53,7 +53,7 @@ void ray_Position(Ray* r, Tuple4d* res, float t)
 
 
 // TODO: Consider passing sorted intersections in and inserting hits to keep the array sorted!
-void ray_IntersectSphere(Ray* ray, Object* obj, Intersections* ints)
+void ray_IntersectSphere(Ray* ray, Shape* obj, Intersections* ints)
 {
     Matrix4d inverse_transform;
     vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
@@ -165,12 +165,12 @@ void ray_Transform(Ray* r, Ray* r_res, Matrix4d* transform)
     vecmath_MultiplyTuple4dByMatrix4d(&(r_res->direction), transform);
 }
 
-void ray_ObjectSetTransform(Object* o, Matrix4d* m)
+void ray_ObjectSetTransform(Shape* o, Matrix4d* m)
 {
     vecmath_CopyMatrix4d(m, &(o->transform));
 }
 
-void ray_NormalAt(Object* obj, Tuple4d* world_p, Tuple4d* n)
+void ray_NormalAt(Shape* obj, Tuple4d* world_p, Tuple4d* n)
 {
     Tuple4d object_p;
     vecmath_CopyTuple4d(world_p, &object_p);

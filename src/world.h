@@ -10,7 +10,7 @@
  */
 typedef struct
 {
-    Object objects[MAX_OBJECTS]; /**< Array of spheres and other Objects */
+    Shape objects[MAX_OBJECTS]; /**< Array of spheres and other Objects */
     int numberOfObjects; /**< How many objects are in the world */
     PointLight lightSource;
 } World;
@@ -23,7 +23,7 @@ typedef struct
 {
     bool isHitFromInside;         /**< Does the ray originate from inside the object? */
     float t;            /**< Distance from ray origin to intersection point */
-    Object object;      /**< Intersected object */
+    Shape object;      /**< Intersected object */
     Tuple4d point;      /**< Intersected point in world coords */
     Tuple4d over_point; /**< point very slightly above intersection point for shadow calculations */
     Tuple4d eyeV;       /**< Eye vector at intersection */
@@ -33,8 +33,8 @@ typedef struct
 
 void world_Create(World*);
 int world_getNumberOfObjects(World*);
-void world_CreateDefault(World*); //, Object*, Object*, PointLight*);
-void world_addObject(World*, Object*);
+void world_CreateDefault(World*); //, Shape*, Shape*, PointLight*);
+void world_addObject(World*, Shape*);
 void world_IntersectRayWithWorld(World*, Ray*, Intersections*);
 void world_PrepareComputations(Comps*, Intersection*, Ray*);
 void world_ShadeHit(World*, Comps*, Color*);

@@ -64,7 +64,7 @@ void test_world_DefaultWorldIntersectsFourTimesWithZAxisRay(void)
 void test_world_PrecomputeIntersectionState(void)
 {
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
-    Object sphere1;
+    Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
     ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
@@ -86,7 +86,7 @@ void test_world_PrecomputeIntersectionState(void)
 void test_world_PrecomputeIntersectionState_HitObjectFromOutside(void)
 {
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
-    Object sphere1;
+    Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
     ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
@@ -104,7 +104,7 @@ void test_world_PrecomputeIntersectionState_HitObjectFromOutside(void)
 void test_world_PrecomputeIntersectionState_HitFromWithinObject(void)
 {
     Ray ray = {{0,0,0,1},{0,0,1,0}};
-    Object sphere1;
+    Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
     ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
@@ -128,7 +128,7 @@ void test_world_ShadeIntersection(void)
     world_CreateDefault(&w);
 
     Ray ray = {{0,0,-5,1},{0,0,1,0}};
-    Object obj = w.objects[0];
+    Shape obj = w.objects[0];
     Intersection inter = {4.0, obj};
     Comps comps;
     world_PrepareComputations(&comps, &inter, &ray);
@@ -150,7 +150,7 @@ void test_world_ShadeIntersectionFromInside(void)
     w.lightSource = light;
 
     Ray ray = {{0,0,0,1},{0,0,1,0}};
-    Object obj = w.objects[1];
+    Shape obj = w.objects[1];
     Intersection inter = {0.5, obj};
     Comps comps;
     world_PrepareComputations(&comps, &inter, &ray);

@@ -36,7 +36,7 @@ typedef struct
     ObjectType type;
     Matrix4d transform;
     Material material;
-} Object;
+} Shape;
 
 /*!
  * @brief Intersection with object at distance t.
@@ -45,7 +45,7 @@ typedef struct
 typedef struct
 {
     float t;        /**< Distance to intersection */
-    Object object;  /**< Intersected object */
+    Shape object;  /**< Intersected object */
 } Intersection;
 
 typedef struct
@@ -60,19 +60,19 @@ typedef struct
     Color intensity;
 } PointLight;
 
-//void ray_CopyObject(Object*, Object*);
+//void ray_CopyObject(Shape*, Shape*);
 void ray_Create(Ray*, Tuple4d*, Tuple4d*);
 void ray_GetOriginCopy(Ray*, Tuple4d*);
 //void ray_GetDirectionCopy(Ray*, Tuple4d*);
 void ray_Position(Ray*, Tuple4d*, float);
-void ray_CreateSphere(Object*, Material*);
-void ray_IntersectSphere(Ray*, Object*, Intersections*);
+void ray_CreateSphere(Shape*, Material*);
+void ray_IntersectSphere(Ray*, Shape*, Intersections*);
 void ray_Hit(Intersections*, Intersection*);
 void ray_BubbleSortIntegers(int[], int);
 void ray_BubbleSortIntersections(Intersections*);
 void ray_Transform(Ray*, Ray*, Matrix4d*);
-void ray_ObjectSetTransform(Object*, Matrix4d*);
-void ray_NormalAt(Object*, Tuple4d*, Tuple4d*);
+void ray_ObjectSetTransform(Shape*, Matrix4d*);
+void ray_NormalAt(Shape*, Tuple4d*, Tuple4d*);
 void ray_Reflect(Tuple4d*, Tuple4d*, Tuple4d*);
 void ray_CreatePointLight(PointLight*, Tuple4d*, Color*);
 void ray_CreateDefaultMaterial(Material*);

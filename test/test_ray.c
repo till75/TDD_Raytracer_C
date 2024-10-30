@@ -60,7 +60,7 @@ void test_ray_Position(void)
 
 void test_ray_IntersectSphereInTwoPoints(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
 //    ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
 
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
@@ -75,7 +75,7 @@ void test_ray_IntersectSphereInTwoPoints(void)
 
 void test_ray_IntersectSphereInTangent(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,1,-5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -89,7 +89,7 @@ void test_ray_IntersectSphereInTangent(void)
 
 void test_ray_IntersectSphereMisses(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,2,-5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -101,7 +101,7 @@ void test_ray_IntersectSphereMisses(void)
 
 void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,0,1}, {0,0,1,0}};
     Intersections intersections;
@@ -115,7 +115,7 @@ void test_ray_IntersectSphere_AndRayOriginatesAtItsCenter(void)
 
 void test_ray_IntersectSphereBehindRay(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -129,7 +129,7 @@ void test_ray_IntersectSphereBehindRay(void)
 
 void test_ray_IntersectionSavesIntersectedObject(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     //ray_CreateSphere(&s, &(Tuple4d){0,0,0,1}, 1.0);
     Ray r = {{0,0,5,1}, {0,0,1,0}};
     Intersections intersections;
@@ -145,7 +145,7 @@ void test_ray_IntersectionSavesIntersectedObject(void)
 
 void test_ray_Hit_AllIntersectionsPositive(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {1, sphere};
     Intersection int2 = {2, sphere};
     Intersections ints;
@@ -161,7 +161,7 @@ void test_ray_Hit_AllIntersectionsPositive(void)
 
 void test_ray_Hit_SomeIntersectionsNegative(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {-1, sphere};
     Intersection int2 = {1, sphere};
     Intersections ints;
@@ -176,7 +176,7 @@ void test_ray_Hit_SomeIntersectionsNegative(void)
 
 void test_ray_Hit_AllIntersectionsNegative(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {-2, sphere};
     Intersection int2 = {-1, sphere};
     Intersections ints;
@@ -191,7 +191,7 @@ void test_ray_Hit_AllIntersectionsNegative(void)
 
 void test_ray_Hit_AlwaysLowestNonNegative(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Intersection int1 = {5, sphere};
     Intersection int2 = {7, sphere};
     Intersection int3 = {-3, sphere};
@@ -250,7 +250,7 @@ void test_ray_ScaleRay(void)
 
 void test_ray_SphereDefaultTransform(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d identity_matrix = UNITY_TRANSFORM;
 
     TEST_ASSERT_TRUE(vecmath_AreEqualMatrices4d(&identity_matrix, &(sphere.transform)));
@@ -258,7 +258,7 @@ void test_ray_SphereDefaultTransform(void)
 
 void test_ray_SphereChangeTransform(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d transl;
     transforms_GetTranslationMatrix4d(&transl, 2, 3, 4);
     ray_ObjectSetTransform(&sphere, &transl);
@@ -268,7 +268,7 @@ void test_ray_SphereChangeTransform(void)
 
 void test_ray_IntersectionWithScaledSphere(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     Matrix4d scale;
     transforms_GetScalingMatrix4d(&scale, 2, 2, 2);
     ray_ObjectSetTransform(&s, &scale);
@@ -283,7 +283,7 @@ void test_ray_IntersectionWithScaledSphere(void)
 
 void test_ray_DoesNotIntersectWithTranslatedSphere(void)
 {
-    Object s = {SPHERE, UNITY_TRANSFORM};
+    Shape s = {SPHERE, UNITY_TRANSFORM};
     Matrix4d transl;
     transforms_GetTranslationMatrix4d(&transl, 5, 0, 0);
     ray_ObjectSetTransform(&s, &transl);
@@ -296,7 +296,7 @@ void test_ray_DoesNotIntersectWithTranslatedSphere(void)
 
 void test_ray_CreateSphereNormalAtX1(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Tuple4d p = {1,0,0,1};
     Tuple4d n = {0,0,0,0};
     ray_NormalAt(&sphere, &p, &n);
@@ -307,7 +307,7 @@ void test_ray_CreateSphereNormalAtX1(void)
 
 void test_ray_CreateSphereNormalAtY1(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Tuple4d p = {0,1,0,1};
     Tuple4d n = {0,0,0,0};
     ray_NormalAt(&sphere, &p, &n);
@@ -318,7 +318,7 @@ void test_ray_CreateSphereNormalAtY1(void)
 
 void test_ray_CreateSphereNormalAtZ1(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Tuple4d p = {0,0,1,1};
     Tuple4d n = {0,0,0,0};
     ray_NormalAt(&sphere, &p, &n);
@@ -329,7 +329,7 @@ void test_ray_CreateSphereNormalAtZ1(void)
 
 void test_ray_CreateSphereNormalAtXYZ(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     float tmp = sqrt(3)/3.0;
     Tuple4d p = {tmp,tmp,tmp,1};
     Tuple4d n = {0,0,0,0};
@@ -342,7 +342,7 @@ void test_ray_CreateSphereNormalAtXYZ(void)
 
 void test_ray_CreateNormalOnTranslatedSphere(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d transl;
     transforms_GetTranslationMatrix4d(&transl, 0, 1, 0);
     vecmath_CopyMatrix4d(&transl, &(sphere.transform));
@@ -357,7 +357,7 @@ void test_ray_CreateNormalOnTranslatedSphere(void)
 
 void test_ray_CreateNormalOnScaledSphere(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d scale;
     transforms_GetScalingMatrix4d(&scale, 1, 0.5, 1);
     Matrix4d rotZ;
@@ -376,7 +376,7 @@ void test_ray_CreateNormalOnScaledSphere(void)
 
 void test_ray_CreateNormalOnScaledAndTranslatedSphere(void)
 {
-    Object sphere = {SPHERE, UNITY_TRANSFORM};
+    Shape sphere = {SPHERE, UNITY_TRANSFORM};
     Matrix4d rotY;
     transforms_GetRotationYMatrix4d(&rotY, M_PI/4.0);
     vecmath_CopyMatrix4d(&rotY, &(sphere.transform));
@@ -443,7 +443,7 @@ void test_ray_SphereHasDefaultMaterial(void)
 {
     Material mat;
     ray_CreateDefaultMaterial(&mat);
-    Object sphere;
+    Shape sphere;
     ray_CreateSphere(&sphere, &mat);
     Material expM;
     ray_CreateDefaultMaterial(&expM);
@@ -456,7 +456,7 @@ void test_ray_SphereHasAssignedMaterial(void)
     Material mat;
     ray_CreateDefaultMaterial(&mat);
     mat.ambient = 1;
-    Object sphere;
+    Shape sphere;
     ray_CreateSphere(&sphere, &mat);
     Material expM;
     ray_CreateDefaultMaterial(&expM);

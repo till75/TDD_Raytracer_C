@@ -13,6 +13,7 @@
 #define MAX_OBJECTS 12
 #include "vecmath.h"
 #include "color.h"
+#include "pattern.h"
 
 typedef struct 
 {
@@ -27,6 +28,7 @@ typedef struct
     float diffuse;
     float specular;
     float shininess;
+    Pattern pattern;
 } Material;
 
 typedef enum {SPHERE, TRIANGLE, CYLINDER, PLANE, OBJ_NONE} ObjectType;
@@ -78,7 +80,7 @@ void ray_NormalAt(Shape*, Tuple4d*, Tuple4d*);
 void ray_Reflect(Tuple4d*, Tuple4d*, Tuple4d*);
 void ray_CreatePointLight(PointLight*, Tuple4d*, Color*);
 void ray_CreateDefaultMaterial(Material*);
-void ray_Lighting(Color*, Material*, PointLight*, Tuple4d*, Tuple4d*, Tuple4d*, bool in_shadow);
-void ray_CreateMaterial(Material*, Color*, float, float, float, float);
+void ray_Lighting(Color* result, Material* mat, PointLight* l, Tuple4d* point, Tuple4d* eyeV, Tuple4d* normal, bool in_shadow);
+void ray_CreateMaterial(Material*, Color*, float, float, float, float, Pattern*);
 
 #endif // RAY_H

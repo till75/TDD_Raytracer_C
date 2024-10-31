@@ -38,7 +38,7 @@ void ray_CreatePlane(Shape* obj, Material* mat)
     memcpy(&(obj->material), mat, sizeof(obj->material)); 
 }
 
-void ray_CreateMaterial(Material* mat, Color* col, float ambient, float diffuse, float specular, float shininess)
+void ray_CreateMaterial(Material* mat, Color* col, float ambient, float diffuse, float specular, float shininess, Pattern* pat)
 {
     mat->color.red = col->red;
     mat->color.green = col->green;
@@ -47,6 +47,7 @@ void ray_CreateMaterial(Material* mat, Color* col, float ambient, float diffuse,
     mat->diffuse = diffuse;
     mat->specular = specular;
     mat->shininess = shininess;
+    mat->pattern = *pat;
 }
 
 void ray_Position(Ray* r, Tuple4d* res, float t)
@@ -236,7 +237,14 @@ void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* poin
 {
     // Combine the surface color with the light's color/intensity
     Color effective_color;
-    memcpy(&effective_color, &(mat->color), sizeof(effective_color));
+    if (mat->pattern.type == NONE)
+    {
+        effective_color = mat->color;
+    }
+    else if (mat->pattern.type == STRIPES)
+    {
+        pattern_StripeAt(&mat->pattern, point, &effective_color);
+    }
     color_MultiplyColors(&effective_color, &(light->intensity));
 
     // Find the direction to the light source

@@ -4,6 +4,7 @@
 #include "vecmath.h"
 #include "transforms.h"
 
+static Pattern NO_PATTERN = {0, {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}};
 
 void world_Create(World* w) 
 {
@@ -22,13 +23,13 @@ void world_CreateDefault(World* w)
     Shape sphere1;
     Color color1 = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &color1, 0.1, 0.7, 0.2, 200.0, &NO_PATTERN);
     ray_CreateSphere(&sphere1, &mat);
 
     Shape sphere2;
     Color color2 = {1, 1, 1};
     Material mat2;
-    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0); // default material!
+    ray_CreateMaterial(&mat2, &color2, 0.1, 0.9, 0.9, 200.0, &NO_PATTERN); // default material!
     ray_CreateSphere(&sphere2, &mat2);
     Matrix4d sphere_transform;
     transforms_GetScalingMatrix4d(&sphere_transform, 0.5, 0.5, 0.5); 

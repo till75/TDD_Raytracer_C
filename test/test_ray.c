@@ -11,6 +11,8 @@
 #include "canvas.h"
 #include <stdio.h>
 
+static Pattern NO_PATTERN = {0, {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}};
+
 void setUp(void)
 {
 }
@@ -34,7 +36,7 @@ void test_ray_CreateMaterial()
 {
     Color c = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &c, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &c, 0.1, 0.7, 0.2, 200.0, &NO_PATTERN);
 
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.1, mat.ambient);
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 0.7, mat.diffuse);

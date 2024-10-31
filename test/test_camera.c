@@ -19,6 +19,9 @@
 #include "color.h"
 #include "camera.h"
 #include "canvas.h"
+#include "pattern.h"
+
+static Pattern NO_PATTERN = {0, {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}};
 
 void setUp(void)
 {
@@ -253,9 +256,15 @@ void test_camera_RenderWorldWith3SpheresOnPlane(void)
     // Floor: PLANE
     Shape floor;
 
+    Pattern sp;
+    Color light_salmon = {1, 0.63, 0.48};
+    Color turquoise = {0.25,0.875,0.8125};
+    Color burly_wood = {0.87, 0.72, 0.53};
+    pattern_CreateStripePattern(&sp, &turquoise, &burly_wood);
+
     Color floor_color = {1.0, 0.9, 0.9};
     Material floor_mat;
-    ray_CreateMaterial(&floor_mat, &floor_color, 0.1, 0.9, 0, 0);
+    ray_CreateMaterial(&floor_mat, &floor_color, 0.1, 0.9, 0, 0, &sp);
     ray_CreatePlane(&floor, &floor_mat);
   
 
@@ -264,7 +273,7 @@ void test_camera_RenderWorldWith3SpheresOnPlane(void)
 
     Color ms_color = {0.1, 1, 0.5};
     Material ms_mat;
-    ray_CreateMaterial(&ms_mat, &ms_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateMaterial(&ms_mat, &ms_color, 0.1, 0.7, 0.3, 200, &NO_PATTERN);
     ray_CreateSphere(&middle_sphere, &ms_mat);
 
     Matrix4d transl;
@@ -276,7 +285,7 @@ void test_camera_RenderWorldWith3SpheresOnPlane(void)
 
     Color rs_color = {0.5, 1, 0.1};
     Material rs_mat;
-    ray_CreateMaterial(&rs_mat, &rs_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateMaterial(&rs_mat, &rs_color, 0.1, 0.7, 0.3, 200, &NO_PATTERN);
     ray_CreateSphere(&right_sphere, &rs_mat);
 
     Matrix4d transform;
@@ -292,7 +301,7 @@ void test_camera_RenderWorldWith3SpheresOnPlane(void)
 
     Color ls_color = {1, 0.8, 0.1};
     Material ls_mat;
-    ray_CreateMaterial(&ls_mat, &ls_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateMaterial(&ls_mat, &ls_color, 0.1, 0.7, 0.3, 200, &NO_PATTERN);
     ray_CreateSphere(&left_sphere, &ls_mat);
 
     transforms_GetTranslationMatrix4d(&transl, -1.5, 0.33, -0.75);
@@ -325,7 +334,7 @@ void test_camera_RenderWorldWith3SpheresOnPlane(void)
     canvas_Create(&canvas, cam.hsize, cam.vsize);
     camera_RenderImage(&cam, &w, &canvas);
 
-    canvas_PixelsToPPMFile(&canvas, "1Plane3Spheres.ppm");
+    canvas_PixelsToPPMFile(&canvas, "1Plane3SpheresStripePattern.ppm");
     canvas_Destroy(&canvas); 
 }
 // void test_camera_Create(void)

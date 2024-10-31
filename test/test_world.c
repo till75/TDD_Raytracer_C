@@ -20,6 +20,9 @@
 #include "color.h"
 #include "camera.h"
 #include "canvas.h"
+#include "pattern.h"
+
+static Pattern NO_PATTERN = {0, {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}};
 
 void setUp(void)
 {
@@ -67,7 +70,7 @@ void test_world_PrecomputeIntersectionState(void)
     Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0, &NO_PATTERN);
     ray_CreateSphere(&sphere1, &mat);
     Intersection inter = {4.0, sphere1};
     Comps comps;
@@ -89,7 +92,7 @@ void test_world_PrecomputeIntersectionState_HitObjectFromOutside(void)
     Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0, &NO_PATTERN);
     ray_CreateSphere(&sphere1, &mat);
     Intersection inter = {4.0, sphere1};
     Comps comps;
@@ -107,7 +110,7 @@ void test_world_PrecomputeIntersectionState_HitFromWithinObject(void)
     Shape sphere1;
     Color default_color = {0.8, 1.0, 0.6};
     Material mat;
-    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0);
+    ray_CreateMaterial(&mat, &default_color, 0.1, 0.7, 0.2, 200.0, &NO_PATTERN);
     ray_CreateSphere(&sphere1, &mat);
     Intersection inter = {1.0, sphere1};
     Comps comps;

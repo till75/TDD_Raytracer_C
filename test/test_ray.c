@@ -9,6 +9,7 @@
 #include "world.h"
 #include "camera.h"
 #include "canvas.h"
+#include "pattern.h"
 #include <stdio.h>
 
 static Pattern NO_PATTERN = {0, {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}};
@@ -277,7 +278,13 @@ void test_ray_IntersectionWithScaledSphere(void)
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
     intersections.count = 0;
-    ray_IntersectSphere(&r, &s, &intersections);
+
+    Matrix4d inverse_transform;
+    Ray local_ray;
+    vecmath_FastInverseMatrix4d(&s.transform, &inverse_transform);
+    ray_Transform(&r, &local_ray, &inverse_transform);
+
+    ray_IntersectSphere(&local_ray, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
     TEST_ASSERT_FLOAT_WITHIN(EPSILON, 3.0, intersections.intersections[0].t);
@@ -293,7 +300,13 @@ void test_ray_DoesNotIntersectWithTranslatedSphere(void)
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
     intersections.count = 0;
-    ray_IntersectSphere(&r, &s, &intersections);
+
+    Matrix4d inverse_transform;
+    Ray local_ray;
+    vecmath_FastInverseMatrix4d(&s.transform, &inverse_transform);
+    ray_Transform(&r, &local_ray, &inverse_transform);
+
+    ray_IntersectSphere(&local_ray, &s, &intersections);
 
     TEST_ASSERT_EQUAL(0, intersections.count);
 }
@@ -602,6 +615,7 @@ void test_ray_IntersectPlaneCoplanar(void)
 void test_ray_IntersectPlaneFromAbove(void)
 {
     Shape plane;
+    plane.type = PLANE;
     Ray r = {{0,1,0,1},{0,-1,0,0}};
     Intersections ints;
     ints.count = 0;
@@ -615,6 +629,7 @@ void test_ray_IntersectPlaneFromAbove(void)
 void test_ray_IntersectPlaneFromBelow(void)
 {
     Shape plane;
+    plane.type = PLANE;
     Ray r = {{0,-1,0,1},{0,1,0,0}};
     Intersections ints;
     ints.count = 0;

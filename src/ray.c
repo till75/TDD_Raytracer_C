@@ -1,9 +1,11 @@
 #include "ray.h"
+#include "pattern.h"
 
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
 #include <string.h>
+
 //#include "world.h"
 
 void ray_Create(Ray* r, Tuple4d* o, Tuple4d* d)
@@ -27,7 +29,7 @@ void ray_CreateSphere(Shape* obj, Material* mat)
     obj->type=SPHERE;
     Matrix4d tr = UNITY_TRANSFORM;
     vecmath_CopyMatrix4d(&tr, &(obj->transform));
-    memcpy(&(obj->material), mat, sizeof(obj->material)); 
+    obj->material = *mat;
 }
 
 void ray_CreatePlane(Shape* obj, Material* mat)
@@ -71,7 +73,7 @@ void ray_IntersectSphere(Ray* r, Shape* obj, Intersections* ints)
 
     float discriminant = b*b - 4.0 * a * c;
 
-    if (discriminant > 0.0)
+    if (discriminant >= 0.0)
     {
         float sqrt_disc = sqrt(discriminant);
         if (sqrt_disc < 0) // WTF? how can the sqrt of a positive number be negative??
@@ -231,6 +233,9 @@ void ray_CreateDefaultMaterial(Material* m)
     m->diffuse = 0.9;
     m->specular = 0.9;
     m->shininess = 200.0;
+    m->pattern.type = NONE;
+    m->pattern.c1 = m->color;
+    m->pattern.c2 = m->color;
 }
 
 void ray_Lighting(Color* result, Material* mat, PointLight* light, Tuple4d* point, Tuple4d* eyeV, Tuple4d* normal, bool in_shadow)

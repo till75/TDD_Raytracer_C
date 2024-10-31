@@ -49,14 +49,22 @@ void world_addObject(World* w, Shape* obj)
 
 void world_IntersectRayWithWorld(World* world, Ray* ray, Intersections* ints)
 {
+    Matrix4d inverse_transform;
+    Ray local_ray;
     Shape obj;
     for (int obj_no = 0; obj_no < world->numberOfObjects; obj_no++)
     {
         obj = (world->objects)[obj_no];
+        // convert ray into object space
+        vecmath_FastInverseMatrix4d(&(obj.transform), &inverse_transform);
+        ray_Transform(ray, &local_ray, &inverse_transform);
         switch (obj.type)
         {
-            case SPHERE:
-            ray_IntersectSphere(ray, &obj, ints);
+        case SPHERE:
+            ray_IntersectSphere(&local_ray, &obj, ints);
+            break;
+        case PLANE:
+            ray_IntersectPlane(&local_ray, &obj, ints);
             break;
         }
     }

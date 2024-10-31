@@ -274,6 +274,7 @@ void test_ray_IntersectionWithScaledSphere(void)
     ray_ObjectSetTransform(&s, &scale);
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count = 0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(2, intersections.count);
@@ -289,6 +290,7 @@ void test_ray_DoesNotIntersectWithTranslatedSphere(void)
     ray_ObjectSetTransform(&s, &transl);
     Ray r = {{0,0,-5,1}, {0,0,1,0}};
     Intersections intersections;
+    intersections.count = 0;
     ray_IntersectSphere(&r, &s, &intersections);
 
     TEST_ASSERT_EQUAL(0, intersections.count);
@@ -571,6 +573,54 @@ void test_ray_Lighting_LightBehindSurface(void)
 
     Color expected = {0.1, 0.1, 0.1};
     TEST_ASSERT_TRUE(color_AreEqualColors(&expected, &result));
+}
+
+void test_ray_IntersectPlaneParallel(void)
+{
+    Shape plane;
+    Ray r = {{0,10,0,1},{0,0,1,0}};
+    Intersections ints;
+    ints.count = 0;
+    ray_IntersectPlane(&r, &plane, &ints);
+
+    TEST_ASSERT_EQUAL(0, ints.count);
+}
+
+void test_ray_IntersectPlaneCoplanar(void)
+{
+    Shape plane;
+    Ray r = {{0,0,0,1},{0,0,1,0}};
+    Intersections ints;
+    ints.count = 0;
+    ray_IntersectPlane(&r, &plane, &ints);
+
+    TEST_ASSERT_EQUAL(0, ints.count);
+}
+
+void test_ray_IntersectPlaneFromAbove(void)
+{
+    Shape plane;
+    Ray r = {{0,1,0,1},{0,-1,0,0}};
+    Intersections ints;
+    ints.count = 0;
+    ray_IntersectPlane(&r, &plane, &ints);
+
+    TEST_ASSERT_EQUAL(1, ints.count);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, ints.intersections[0].t);
+    TEST_ASSERT_EQUAL(PLANE, ints.intersections[0].object.type);
+}
+
+void test_ray_IntersectPlaneFromBelow(void)
+{
+    Shape plane;
+    Ray r = {{0,-1,0,1},{0,1,0,0}};
+    Intersections ints;
+    ints.count = 0;
+    ray_IntersectPlane(&r, &plane, &ints);
+
+    TEST_ASSERT_EQUAL(1, ints.count);
+    TEST_ASSERT_FLOAT_WITHIN(EPSILON, 1.0, ints.intersections[0].t);
+    TEST_ASSERT_EQUAL(PLANE, ints.intersections[0].object.type);
 }
 
 #endif // TEST

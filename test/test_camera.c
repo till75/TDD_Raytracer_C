@@ -136,6 +136,7 @@ void test_camera_RayOfTransformedCamera(void)
 //     canvas_Destroy(&canvas); 
 // }
 
+/*
 void test_camera_RenderWorldWith6Spheres(void)
 {
     // Sphere 1 - floor
@@ -233,7 +234,7 @@ void test_camera_RenderWorldWith6Spheres(void)
 
     // Camera
     Camera2 cam;
-    camera_Create2(&cam, 600, 300, M_PI/3.0);
+    camera_Create2(&cam, 200, 100, M_PI/3.0);
     camera_InitPixelSize(&cam);
     Tuple4d from = {0,1.5,-5,1};
     Tuple4d to = {0,1,0,1};
@@ -246,8 +247,87 @@ void test_camera_RenderWorldWith6Spheres(void)
     canvas_PixelsToPPMFile(&canvas, "Render6Spheres.ppm");
     canvas_Destroy(&canvas); 
 }
+*/
+void test_camera_RenderWorldWith3SpheresOnPlane(void)
+{
+    // Floor: PLANE
+    Shape floor;
 
+    Color floor_color = {1.0, 0.9, 0.9};
+    Material floor_mat;
+    ray_CreateMaterial(&floor_mat, &floor_color, 0.1, 0.9, 0, 0);
+    ray_CreatePlane(&floor, &floor_mat);
+  
 
+    // Sphere 1 - left
+    Shape middle_sphere;
+
+    Color ms_color = {0.1, 1, 0.5};
+    Material ms_mat;
+    ray_CreateMaterial(&ms_mat, &ms_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateSphere(&middle_sphere, &ms_mat);
+
+    Matrix4d transl;
+    transforms_GetTranslationMatrix4d(&transl, -0.5, 1, 0.5);
+    vecmath_CopyMatrix4d(&transl, &(middle_sphere.transform));
+
+    // Sphere 2 - right
+    Shape right_sphere;
+
+    Color rs_color = {0.5, 1, 0.1};
+    Material rs_mat;
+    ray_CreateMaterial(&rs_mat, &rs_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateSphere(&right_sphere, &rs_mat);
+
+    Matrix4d transform;
+    Matrix4d scale;
+    transforms_GetTranslationMatrix4d(&transl, 1.5, 0.5, -0.5);
+    vecmath_CopyMatrix4d(&transl, &transform);
+    transforms_GetScalingMatrix4d(&scale, 0.5, 0.5, 0.5);
+    vecmath_MultiplyMatrix4d(&transform, &scale);
+    vecmath_CopyMatrix4d(&transform, &(right_sphere.transform));
+
+    // Sphere 3 - left
+    Shape left_sphere;
+
+    Color ls_color = {1, 0.8, 0.1};
+    Material ls_mat;
+    ray_CreateMaterial(&ls_mat, &ls_color, 0.1, 0.7, 0.3, 200);
+    ray_CreateSphere(&left_sphere, &ls_mat);
+
+    transforms_GetTranslationMatrix4d(&transl, -1.5, 0.33, -0.75);
+    vecmath_CopyMatrix4d(&transl, &transform);
+    transforms_GetScalingMatrix4d(&scale, 0.33, 0.33, 0.33);
+    vecmath_MultiplyMatrix4d(&transform, &scale);
+    vecmath_CopyMatrix4d(&transform, &(left_sphere.transform));
+
+    // World
+    World w;
+    w.numberOfObjects = 0;
+    world_addObject(&w, &floor);
+    world_addObject(&w, &middle_sphere);
+    world_addObject(&w, &left_sphere);
+    world_addObject(&w, &right_sphere);
+
+    // Light source
+    PointLight light = {{-10,10,-10,1},{1,1,1}};
+    w.lightSource = light;
+
+    // Camera
+    Camera2 cam;
+    camera_Create2(&cam, 600, 300, M_PI/3.0);
+    camera_InitPixelSize(&cam);
+    Tuple4d from = {0,1.5,-5,1};
+    Tuple4d to = {0,1,0,1};
+    Tuple4d up = {0,1,0,0};
+    camera_SetViewTransform(&cam, &from, &to, &up);
+    Canvas canvas;
+    canvas_Create(&canvas, cam.hsize, cam.vsize);
+    camera_RenderImage(&cam, &w, &canvas);
+
+    canvas_PixelsToPPMFile(&canvas, "1Plane3Spheres.ppm");
+    canvas_Destroy(&canvas); 
+}
 // void test_camera_Create(void)
 // {
 //     int w = 640;

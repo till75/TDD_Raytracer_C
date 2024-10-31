@@ -30,6 +30,14 @@ void ray_CreateSphere(Shape* obj, Material* mat)
     memcpy(&(obj->material), mat, sizeof(obj->material)); 
 }
 
+void ray_CreatePlane(Shape* obj, Material* mat)
+{
+    obj->type=PLANE;
+    Matrix4d tr = UNITY_TRANSFORM;
+    vecmath_CopyMatrix4d(&tr, &(obj->transform));
+    memcpy(&(obj->material), mat, sizeof(obj->material)); 
+}
+
 void ray_CreateMaterial(Material* mat, Color* col, float ambient, float diffuse, float specular, float shininess)
 {
     mat->color.red = col->red;
@@ -53,16 +61,11 @@ void ray_Position(Ray* r, Tuple4d* res, float t)
 
 
 // TODO: Consider passing sorted intersections in and inserting hits to keep the array sorted!
-void ray_IntersectSphere(Ray* ray, Shape* obj, Intersections* ints)
+void ray_IntersectSphere(Ray* r, Shape* obj, Intersections* ints)
 {
-    Matrix4d inverse_transform;
-    vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
-    Ray r;
-    ray_Transform(ray, &r, &inverse_transform);
-    
-    Tuple4d sphere_to_ray = {r.origin[0], r.origin[1], r.origin[2], 0};
-    float a = vecmath_DotProductTuple4d(&(r.direction), &(r.direction));
-    float b = 2.0 * vecmath_DotProductTuple4d(&(r.direction), &sphere_to_ray);
+    Tuple4d sphere_to_ray = {r->origin[0], r->origin[1], r->origin[2], 0};
+    float a = vecmath_DotProductTuple4d(&(r->direction), &(r->direction));
+    float b = 2.0 * vecmath_DotProductTuple4d(&(r->direction), &sphere_to_ray);
     float c = vecmath_DotProductTuple4d(&sphere_to_ray, &sphere_to_ray) - 1.0;
 
     float discriminant = b*b - 4.0 * a * c;
@@ -70,7 +73,7 @@ void ray_IntersectSphere(Ray* ray, Shape* obj, Intersections* ints)
     if (discriminant > 0.0)
     {
         float sqrt_disc = sqrt(discriminant);
-        if (sqrt_disc < 0)
+        if (sqrt_disc < 0) // WTF? how can the sqrt of a positive number be negative??
         {
             ints->intersections[ints->count].t = (-b + sqrt_disc) / (2.0 * a);
             ints->intersections[ints->count+1].t = (-b - sqrt_disc) / (2.0 * a);
@@ -87,6 +90,16 @@ void ray_IntersectSphere(Ray* ray, Shape* obj, Intersections* ints)
     }
 }
 
+void ray_IntersectPlane(Ray* local_ray, Shape* obj, Intersections* ints)
+{
+    if (fabsf((local_ray->direction)[1]) > EPSILON) // neither parallel nor coplanar
+    {
+        (ints->intersections)[ints->count].object = *obj;
+        (ints->intersections)[ints->count].t = - (local_ray->origin)[1] / (local_ray->direction[1]);
+        ints->count += 1;
+    }
+}
+
 void ray_Hit(Intersections* ints, Intersection* res)
 {
 //    int i = 0;
@@ -100,15 +113,6 @@ void ray_Hit(Intersections* ints, Intersection* res)
             t_closest = ints->intersections[i].t;
         }
     }
-    // do 
-    // {
-    //     if (ints->intersections[i].t > 0 && ints->intersections[i].t < t_closest)
-    //     {
-    //         i_closest = i;
-    //         t_closest = ints->intersections[i].t;
-    //     }
-    //     i++;
-    // } while (i < ints->count);
     if (i_closest >= 0)
     {
         res->object = ints->intersections[i_closest].object;
@@ -172,16 +176,29 @@ void ray_ObjectSetTransform(Shape* o, Matrix4d* m)
 
 void ray_NormalAt(Shape* obj, Tuple4d* world_p, Tuple4d* n)
 {
-    Tuple4d object_p;
-    vecmath_CopyTuple4d(world_p, &object_p);
+    // transform hitpoint to local (shape) space
+    Tuple4d local_p;
+    vecmath_CopyTuple4d(world_p, &local_p);
     Matrix4d inverse_transform;
     vecmath_FastInverseMatrix4d(&(obj->transform), &inverse_transform);
-    vecmath_MultiplyTuple4dByMatrix4d(&object_p, &inverse_transform);
+    vecmath_MultiplyTuple4dByMatrix4d(&local_p, &inverse_transform);
 
     Tuple4d origin = {0,0,0,1};
-    vecmath_SubtractTuples4d(&object_p, &origin);
-    vecmath_CopyTuple4d(&object_p, n);
+    Tuple4d norm = {0,1,0,0};
+    switch ( obj->type )
+    {
+    case SPHERE:
+        vecmath_SubtractTuples4d(&local_p, &origin);
+        vecmath_CopyTuple4d(&local_p, n);
+        break;
+    
+    case PLANE:
+        vecmath_CopyTuple4d(&norm, n);
+        break;
 
+    }
+
+    // local to world normal
     vecmath_TranssposeMatrix4d(&inverse_transform);
     vecmath_MultiplyTuple4dByMatrix4d(n, &inverse_transform);
     (*n)[3] = 0.0;
